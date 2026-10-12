@@ -1,0 +1,21 @@
+.identification h2 { margin: 24px 0 12px; font-size: 21px; font-weight: 500; line-height: 1.5; }
+.identification-intro { margin: 0 0 26px; font-size: 14px; line-height: 1.8; }
+.identification-status { margin: 24px 0; padding: 16px; border: 1px solid #bfcbbc; background: #f0f3ed; font-size: 13px; line-height: 1.7; }
+.identification-error { padding: 14px; border-left: 2px solid #926b60; background: #f1eae2; font-size: 13px; line-height: 1.7; }
+.identification button:focus-visible, .dossier-toolbar button:focus-visible { outline: 2px solid #617c68; outline-offset: 3px; }
+.identification .secondary { border: 1px solid #bfcbbc; background: transparent; color: #3e5d49; }
+.draft-choice { display: flex; gap: 16px; flex-wrap: wrap; }
+.draft-choice button { margin: 0; }
+.dossier-toolbar { width: min(680px, calc(100% - 32px)); margin: 20px auto 0; border: 1px solid #cdd5ca; background: #f7f8f4; padding: 12px 16px; font-size: 12px; }
+.dossier-toolbar-row { display: flex; justify-content: space-between; align-items: center; gap: 14px; }
+.sync-status { display: block; margin-top: 4px; color: #657568; font-size: 11px; line-height: 1.7; }
+.dossier-toolbar button { margin: 0; padding: 8px 12px; font-size: 12px; }
+.dossier-shell main { margin-top: 16px; }
+.dossier-attachment { margin-top: 14px; }
+.dossier-attachment .attachment-toggle { padding: 0; background: transparent; color: #3e5d49; text-decoration: underline; text-underline-offset: 3px; }
+.dossier-attachment form { margin-top: 18px; }
+@media(max-width: 480px) {
+  body:has(.identification) { min-width: 0; }
+  .identification button { width: 100%; }
+  .dossier-toolbar-row { flex-wrap: wrap; }
+}

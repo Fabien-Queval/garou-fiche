@@ -1,0 +1,26 @@
+.ability-ranking .attribute-arrows button:disabled {
+  background: #eff1ec;
+  color: #a1aaa0;
+  border-color: #dce2d7;
+  cursor: default;
+}
+
+.ability-confirmation {
+  margin: 20px 0 0;
+  padding: 14px;
+  border: 1px solid #bfcbbc;
+  background: #f0f3ed;
+  font-size: 13px;
+}
+
+@media (max-width: 480px) {
+  .ability-ranking .attribute-card-heading {
+    display: grid;
+    grid-template-columns: 26px minmax(0, 1fr);
+  }
+
+  .ability-ranking .attribute-arrows {
+    grid-column: 2;
+    justify-self: end;
+  }
+}

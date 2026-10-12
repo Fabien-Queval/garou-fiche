@@ -1,0 +1,101 @@
+.attribute-ranking h2 {
+  margin: 20px 0 12px;
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.ranking-help {
+  margin: 0 0 24px;
+  font-size: 12px;
+  color: #657568;
+  line-height: 1.6;
+}
+
+.attribute-cards {
+  display: grid;
+  gap: 14px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.attribute-card {
+  padding: 18px;
+  border: 1px solid #cdd5ca;
+  border-radius: 2px;
+  background: #f5f7f1;
+}
+
+.attribute-card-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.attribute-position {
+  min-width: 26px;
+  font-size: 12px;
+  color: #657568;
+}
+
+.attribute-card h3 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 500;
+}
+
+.attribute-card > p {
+  margin: 12px 0 0;
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.attribute-arrows {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.attribute-arrows button {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #bfcbbc;
+  background: #fcfcf9;
+  color: #3e5d49;
+  font-size: 22px;
+  line-height: 1;
+}
+
+.attribute-arrows button:hover {
+  background: #e5ebe1;
+  border-color: #617c68;
+}
+
+.attribute-arrows button:focus-visible,
+.attribute-card:focus-visible {
+  outline: 2px solid #617c68;
+  outline-offset: 3px;
+}
+
+@media (max-width: 480px) {
+  .attribute-card {
+    padding: 14px;
+  }
+
+  .attribute-card-heading {
+    gap: 8px;
+  }
+
+  .attribute-arrows {
+    gap: 4px;
+  }
+
+  .attribute-ranking h2 {
+    font-size: 20px;
+  }
+}

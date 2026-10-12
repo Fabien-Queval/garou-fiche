@@ -1,0 +1,43 @@
+body:has(.background-assessment) { min-width: 0; }
+.background-card legend { line-height: 1.5; overflow-wrap: anywhere; }
+.background-levels { grid-template-columns: 38px repeat(5, minmax(0, 1fr)); width: min(100%, 330px); margin-top: 18px; }
+.background-card[data-background-mode="foreign"] {
+  border-color: #a08a81;
+  border-left: 3px solid #78506a;
+  background: repeating-linear-gradient(0deg, #71344305 0 1px, transparent 1px 5px), linear-gradient(115deg, #d8cadc60, #ece6dc60 55%, #f7f8f4);
+  box-shadow: 5px 0 #71344314, -3px 0 #285e5312;
+}
+.background-card[data-background-mode="foreign"] legend,
+.background-garou-layer h3 { font-family: Consolas, monospace; color: #713443; letter-spacing: 0.05em; }
+.background-garou-layer { margin: 20px 0; padding: 16px; border-left: 3px solid #926b60; background: linear-gradient(110deg, #d9cadf75, #e8dfd233 80%); }
+.background-garou-layer h3 { margin: 0 0 12px; font-size: 16px; line-height: 1.6; overflow-wrap: anywhere; }
+.background-garou-layer p { margin: 10px 0 0; font-size: 13px; line-height: 1.7; }
+.background-level-reference { margin-top: 12px; }
+.background-level-reference ol { padding-left: 22px; }
+.background-level-reference li { margin: 12px 0; padding-left: 4px; }
+.background-level-reference strong { font-weight: 500; }
+.background-level-reference li p { margin: 4px 0; }
+.background-details-button { background: #fcfcf9; color: #3e5d49; border: 1px solid #bfcbbc; font-size: 12px; }
+.background-detail-field { margin: 18px 0; min-width: 0; }
+.background-detail-field input, .background-detail-field textarea, .background-detail-field select { font-size: 13px; }
+.background-detail-field select { width: 100%; padding: 12px; border: 1px solid #bfcbbc; background: white; color: inherit; font: inherit; }
+.background-field-hint { font-size: 12px; color: #657568; line-height: 1.7; }
+.field-required { font-size: 11px; color: #765b50; }
+.background-detail-field[data-discordant="true"] { padding: 12px; border: 1px solid #713443; background: linear-gradient(125deg, #71344324, #71344305); }
+.background-detail-field[data-discordant="true"] label { color: #713443; text-shadow: 1px 0 #71344330; }
+.totem-emphasis { padding: 14px; border-block: 1px solid #9b7c70; font-size: 13px; line-height: 1.8; color: #713443; letter-spacing: 0.03em; font-weight: 600; }
+.totem-summary { margin-top: 16px; padding: 14px; border: 1px solid #ad9c9a; background: #fcfcf980; font-size: 13px; line-height: 1.6; }
+.totem-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.totem-actions button { margin: 0; font-size: 12px; }
+.background-dialog { width: min(600px, calc(100vw - 32px)); max-height: 85svh; overflow: auto; padding: 24px; border: 1px solid #a08a81; border-top: 3px solid #617c68; background: #fcfcf9; color: #293b33; box-shadow: 0 24px 70px #27372d40; }
+.background-dialog::backdrop { background: #18282080; backdrop-filter: blur(3px); }
+.background-dialog-header { display: flex; align-items: start; gap: 12px; }
+.background-dialog-header h2 { margin: 0; font-size: 19px; font-weight: 500; line-height: 1.5; flex: 1; overflow-wrap: anywhere; }
+.background-dialog-header button { margin: 0; background: transparent; color: #3e5d49; border: 1px solid #cdd5ca; padding: 6px 12px; font-size: 22px; }
+.background-detail-sheet { margin: 20px 0; padding: 12px; min-width: 0; border: 1px solid #cdd5ca; }
+.background-detail-sheet legend { font-size: 13px; padding: 0 6px; }
+@media (max-width: 480px) {
+  .background-levels { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .background-dialog { padding: 16px; }
+  .background-garou-layer { padding: 12px; }
+}
