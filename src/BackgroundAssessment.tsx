@@ -153,8 +153,8 @@ function BackgroundDetailsDialog({ definition, draft, onDetail, onClose }: { def
     </dialog>
 }
 
-type Props = { draft: BackgroundDraft; setDraft: Dispatch<SetStateAction<BackgroundDraft>>; onBack: () => void; totemRepository?: TotemRepository }
-export default function BackgroundAssessment({ draft, setDraft, onBack, totemRepository }: Props) {
+type Props = { draft: BackgroundDraft; setDraft: Dispatch<SetStateAction<BackgroundDraft>>; onBack: () => void; onContinue: () => void; totemRepository?: TotemRepository }
+export default function BackgroundAssessment({ draft, setDraft, onBack, onContinue, totemRepository }: Props) {
     const [active, setActive] = useState<BackgroundId | null>(null)
     const [storageError, setStorageError] = useState(false)
     const opener = useRef<HTMLButtonElement | null>(null)
@@ -170,16 +170,16 @@ export default function BackgroundAssessment({ draft, setDraft, onBack, totemRep
     }, [])
     return <section className="assessment background-assessment" aria-labelledby="background-title">
         <p className="eyebrow">Votre parcours — Environnement et appuis</p>
-        <h2 id="background-title">Environnement, ressources et appuis</h2>
+        <h2 id="background-title" tabIndex={-1}>Environnement, ressources et appuis</h2>
         <p className="assessment-intro">Les éléments suivants décrivent les ressources, relations, circonstances et héritages susceptibles d’avoir une influence durable sur votre parcours. Vous disposez de 5 points à répartir.</p>
         <p className="ability-instructions">Choisissez de 0 à 5 pour chaque appui. Le bouton 0 permet de rendre les points.</p>
         <div className="budget-summary" role="status"><span>Points disponibles : <strong>5</strong></span><span>Restants : <strong>{remaining}</strong></span></div>
-        <form onSubmit={event => { event.preventDefault(); if (complete) setDraft(current => ({ ...current, confirmed: true })) }}>
+        <form onSubmit={event => { event.preventDefault(); if (complete) { setDraft(current => ({ ...current, confirmed: true })); onContinue() } }}>
             <div className="assessment-criteria">{BACKGROUNDS.map(definition => <BackgroundCard key={definition.id} definition={definition} draft={draft} remaining={remaining} onChoose={(id, level) => setDraft(current => selectBackgroundLevel(current, id, level))} onDetail={detail} onReveal={reveal} onOpen={(id, button) => { opener.current = button; setActive(id) }} totemRepository={totemRepository} />)}</div>
             <p className="assessment-help">{remaining > 0 ? `Répartissez encore ${remaining} ${remaining === 1 ? 'point' : 'points'} pour continuer.` : complete ? 'Tous les points ont été répartis.' : 'Précisez le type d’esprits auquel vous êtes lié pour continuer.'}</p>
             {storageError && <p role="alert">La sauvegarde sur cet appareil est indisponible. Gardez cet onglet ouvert pour conserver vos réponses.</p>}
             {draft.confirmed && <p className="assessment-confirmation" role="status">Vos réponses pour ce volet sont validées.</p>}
-            <div className="assessment-actions"><button type="button" className="secondary-button" onClick={onBack}>Retour aux compétences</button><button type="submit" disabled={!complete || draft.confirmed}>{draft.confirmed ? 'Validé' : 'Continuer'}</button></div>
+            <div className="assessment-actions"><button type="button" className="secondary-button" onClick={onBack}>Retour aux compétences</button><button type="submit" disabled={!complete}>Continuer</button></div>
         </form>
         {activeDefinition && <BackgroundDetailsDialog definition={activeDefinition} draft={draft} onDetail={detail} onClose={() => { setActive(null); requestAnimationFrame(() => opener.current?.focus()) }} />}
     </section>

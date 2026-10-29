@@ -10,7 +10,7 @@ import './Authentication.css'
 
 const App = lazy(() => import('./App'))
 
-const previewScreens = ['attributes', 'functional', 'relational', 'cognitive', 'abilities', 'talents', 'skills', 'knowledges', 'backgrounds']
+const previewScreens = ['attributes', 'functional', 'relational', 'cognitive', 'abilities', 'talents', 'skills', 'knowledges', 'backgrounds', 'passage']
 const localPreview = import.meta.env.DEV && previewScreens.includes(new URLSearchParams(window.location.search).get('screen') ?? '')
 const BASE_KEY = 'garou-questionnaire-v1'
 

@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { BACKGROUNDS, allocatedBackgroundPoints, canCompleteBackgrounds } from './backgrounds.ts'
 import type { BackgroundDraft } from './backgrounds'
+import { validUmbraDraft } from './umbraQuestionnaire.ts'
 
 type StoragePort = Pick<Storage, 'getItem' | 'setItem'>
 const screen = import.meta.env?.DEV && typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('screen') : null
@@ -20,7 +21,8 @@ export function readAnswer<T>(storage: StoragePort, key: string, field: string, 
         const value = JSON.parse(storage.getItem(key) ?? '{}')[field]
         if (!compatible(value, fallback)) return fallback
         if (['abilityIndex', 'evaluationIndex'].includes(field) && value > 2) return fallback
-        if (field === 'phase' && !['job', 'scramble', 'concept', 'attributes', 'evaluation', 'abilities', 'abilityEvaluation', 'backgrounds'].includes(value)) return fallback
+        if (field === 'phase' && !['job', 'scramble', 'concept', 'attributes', 'evaluation', 'abilities', 'abilityEvaluation', 'backgrounds', 'umbra'].includes(value)) return fallback
+        if (field === 'umbraDraft' && !validUmbraDraft(value)) return fallback
         if (field === 'backgroundDraft') {
             const draft = value as BackgroundDraft
             if (allocatedBackgroundPoints(draft.values) > 5) return fallback

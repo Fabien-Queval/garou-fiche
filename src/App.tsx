@@ -1,9 +1,12 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import AttributeRanking from './AttributeRanking'
 import AbilityRanking from './AbilityRanking'
 import AbilityAssessment from './AbilityAssessment'
 import BackgroundAssessment from './BackgroundAssessment'
-import { createBackgroundDraft } from './backgrounds'
+import { canCompleteBackgrounds, createBackgroundDraft } from './backgrounds'
+import UmbraAssessment from './UmbraAssessment'
+import UmbraTakeover from './UmbraTakeover'
+import { createUmbraDraft } from './umbraQuestionnaire'
 import { useQuestionnaireState } from './questionnaireStorage'
 import type { TotemRepository } from './totemRepository'
 import { abilityBudget } from './abilities'
@@ -26,7 +29,7 @@ import {
     distortionAt,
 } from './scramble'
 
-type Phase = 'job' | 'scramble' | 'concept' | 'attributes' | 'evaluation' | 'abilities' | 'abilityEvaluation' | 'backgrounds'
+type Phase = 'job' | 'scramble' | 'concept' | 'attributes' | 'evaluation' | 'abilities' | 'abilityEvaluation' | 'backgrounds' | 'umbra'
 
 const attributePreview = import.meta.env.DEV &&
     new URLSearchParams(window.location.search).get('screen') === 'attributes'
@@ -45,7 +48,7 @@ const skillsPreview = import.meta.env.DEV &&
 const knowledgesPreview = import.meta.env.DEV &&
     new URLSearchParams(window.location.search).get('screen') === 'knowledges'
 const backgroundsPreview = import.meta.env.DEV &&
-    new URLSearchParams(window.location.search).get('screen') === 'backgrounds'
+    ['backgrounds', 'passage'].includes(new URLSearchParams(window.location.search).get('screen') ?? '')
 
 function App({ totemRepository }: { totemRepository?: TotemRepository }) {
     const [playerName, setPlayerName] = useQuestionnaireState('playerName', '')
@@ -66,6 +69,9 @@ function App({ totemRepository }: { totemRepository?: TotemRepository }) {
     const [knowledgeValues, setKnowledgeValues] = useQuestionnaireState('knowledgeValues', createAbilityValues(KNOWLEDGES))
     const [knowledgeDetails, setKnowledgeDetails] = useQuestionnaireState<AbilityDetails>('knowledgeDetails', {})
     const [backgroundDraft, setBackgroundDraft] = useQuestionnaireState('backgroundDraft', createBackgroundDraft())
+    const [umbraDraft, setUmbraDraft] = useQuestionnaireState('umbraDraft', createUmbraDraft())
+    const [takingOver, setTakingOver] = useState(false)
+    const finishTakingOver = useCallback(() => setTakingOver(false), [])
     const [evaluationIndex, setEvaluationIndex] = useQuestionnaireState('evaluationIndex', cognitivePreview ? 2 : relationalPreview ? 1 : 0)
     const [physicalValues, setPhysicalValues] = useQuestionnaireState<PhysicalValues>('physicalValues', { strength: 1, dexterity: 1, stamina: 1 })
     const [socialValues, setSocialValues] = useQuestionnaireState<SocialValues>('socialValues', { charisma: 1, manipulation: 1, appearance: 1 })
@@ -108,7 +114,7 @@ function App({ totemRepository }: { totemRepository?: TotemRepository }) {
     }, [phase, setPhase])
 
     const stage = phase === 'scramble' ? distortionAt(elapsed) : 'quiet'
-    const headerTitle = phase === 'backgrounds' ? 'Environnement, ressources et appuis' : phase === 'abilityEvaluation'
+    const headerTitle = phase === 'backgrounds' || phase === 'umbra' ? 'Environnement, ressources et appuis' : phase === 'abilityEvaluation'
         ? 'Évaluation des compétences acquises'
         : phase === 'abilities'
             ? 'Analyse du parcours et des compétences'
@@ -199,8 +205,25 @@ function App({ totemRepository }: { totemRepository?: TotemRepository }) {
         window.scrollTo(0, 0)
     }
 
+    function startUmbra() {
+        if (!canCompleteBackgrounds(backgroundDraft)) return
+        setTakingOver(!umbraDraft.introSeen)
+        setPhase('umbra')
+        window.scrollTo(0, 0)
+    }
+
+    function returnFromUmbra() {
+        setPhase('backgrounds')
+        window.scrollTo(0, 0)
+        requestAnimationFrame(() => document.getElementById('background-title')?.focus({ preventScroll: true }))
+    }
+
+    if (phase === 'umbra' && !takingOver && canCompleteBackgrounds(backgroundDraft)) {
+        return <UmbraAssessment draft={umbraDraft} setDraft={setUmbraDraft} onBack={returnFromUmbra} onRestart={import.meta.env.DEV ? () => { setUmbraDraft(createUmbraDraft()); returnFromUmbra() } : undefined} />
+    }
+
     return (
-        <div className="site-shell" data-distortion={stage}>
+        <div className="site-shell" data-distortion={stage} data-takeover={takingOver}>
             <div className="signal-interference" aria-hidden="true">
                 <div className="signal-grain" />
                 <div className="signal-tear signal-tear--first" />
@@ -208,7 +231,7 @@ function App({ totemRepository }: { totemRepository?: TotemRepository }) {
                 <div className="signal-echo">{CONCEPT_QUESTION}</div>
                 <div className="signal-echo signal-echo--second">{JOB_QUESTION}</div>
             </div>
-            <main aria-busy={phase === 'scramble'}>
+            <main aria-busy={phase === 'scramble'} inert={takingOver}>
                 <header>
                     <p className="eyebrow">{visualText('Service de santé au travail')}</p>
                     <h1 aria-label={headerTitle}>
@@ -219,8 +242,8 @@ function App({ totemRepository }: { totemRepository?: TotemRepository }) {
                 </header>
 
                 {started ? (
-                    phase === 'backgrounds' ? (
-                        <BackgroundAssessment draft={backgroundDraft} setDraft={setBackgroundDraft} totemRepository={totemRepository} onBack={() => { setAbilityIndex(2); setPhase('abilityEvaluation'); window.scrollTo(0, 0) }} />
+                    phase === 'backgrounds' || phase === 'umbra' ? (
+                        <BackgroundAssessment draft={backgroundDraft} setDraft={setBackgroundDraft} totemRepository={totemRepository} onContinue={startUmbra} onBack={() => { setAbilityIndex(2); setPhase('abilityEvaluation'); window.scrollTo(0, 0) }} />
                     ) : phase === 'abilities' ? (
                         <AbilityRanking abilityOrder={abilityOrder} setAbilityOrder={setAbilityOrder} talentsNeedsReset={talentsNeedsReset} skillsNeedsReset={skillsNeedsReset} knowledgesNeedsReset={knowledgesNeedsReset} onContinue={startAbilities} />
                     ) : phase === 'abilityEvaluation' ? (
@@ -419,6 +442,7 @@ function App({ totemRepository }: { totemRepository?: TotemRepository }) {
                     {visualText('Création de personnage — Répondez pour votre personnage fictif.', 0.4)}
                 </footer>
             </main>
+            {takingOver && <UmbraTakeover onComplete={finishTakingOver} />}
             {import.meta.env.DEV && phase === 'concept' && (
                 <aside className="preview-controls" aria-label="Aperçu local">
                     <span>Aperçu local</span>

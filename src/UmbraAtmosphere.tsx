@@ -1,4 +1,8 @@
 import { useEffect, useRef } from 'react'
+import { umbraPalette } from './umbraPalette'
+import type { UmbraColor } from './umbraPalette'
+
+const tint = (color: UmbraColor, opacity: number) => `rgba(${color.join(',')},${opacity})`
 
 function seed(value: number) {
     const n = Math.sin(value * 127.1 + 311.7) * 43758.5453
@@ -18,6 +22,7 @@ export default function UmbraAtmosphere({ depth, still }: { depth: number; still
         let animation = 0
         let lastFrame = 0
         let time = sceneTime.current
+        const palette = umbraPalette(depth)
 
         function point(t: number, i: number) {
             const phase = i * 2.39
@@ -35,7 +40,7 @@ export default function UmbraAtmosphere({ depth, still }: { depth: number; still
             for (let i = 0; i < stars; i++) {
                 const x = seed(i + 3) * width
                 const y = seed(i + 113) * height
-                const a = (0.15 + seed(i + 60) * 0.4) * (0.7 + Math.sin(time * 0.3 + i) * 0.3)
+                const a = (0.15 + seed(i + 60) * 0.4) * (0.7 + Math.sin(time * 0.3 + i) * 0.3) * palette.starPresence
                 context.fillStyle = `rgba(184,216,244,${a})`
                 context.beginPath()
                 context.arc(x, y, i % 17 === 0 ? 1.25 : 0.55, 0, Math.PI * 2)
@@ -46,9 +51,9 @@ export default function UmbraAtmosphere({ depth, still }: { depth: number; still
                 const p = point(time + 3, i)
                 const radius = 45 + seed(i + 20) * 40 + depth * 6
                 const glow = context.createRadialGradient(p.x, p.y, 0, p.x, p.y, radius)
-                glow.addColorStop(0, 'rgba(151,222,255,0.24)')
-                glow.addColorStop(0.18, 'rgba(56,163,255,0.16)')
-                glow.addColorStop(1, 'rgba(24,75,185,0)')
+                glow.addColorStop(0, tint(palette.halo, 0.24))
+                glow.addColorStop(0.18, tint(palette.glow, 0.16))
+                glow.addColorStop(1, tint(palette.glow, 0))
                 context.fillStyle = glow
                 context.fillRect(p.x - radius, p.y - radius, radius * 2, radius * 2)
                 for (let strand = 0; strand < 4; strand++) {
@@ -64,18 +69,18 @@ export default function UmbraAtmosphere({ depth, still }: { depth: number; still
                     }
                     const tail = point(time + 3 - (1.5 + strand * 0.18), i)
                     const light = context.createLinearGradient(tail.x, tail.y, p.x, p.y)
-                    light.addColorStop(0, 'rgba(57,153,248,0)')
-                    light.addColorStop(0.55, strand === 0 ? 'rgba(130,209,255,0.18)' : 'rgba(57,153,248,0.07)')
-                    light.addColorStop(1, strand === 0 ? 'rgba(181,234,255,0.65)' : 'rgba(57,153,248,0.22)')
+                    light.addColorStop(0, tint(palette.glow, 0))
+                    light.addColorStop(0.55, tint(strand === 0 ? palette.halo : palette.glow, strand === 0 ? 0.18 : 0.07))
+                    light.addColorStop(1, tint(strand === 0 ? palette.filament : palette.glow, strand === 0 ? 0.65 : 0.22))
                     context.strokeStyle = light
                     context.lineWidth = strand === 0 ? 0.9 : 2 + strand
                     context.lineCap = 'round'
                     context.stroke()
                 }
                 const core = context.createRadialGradient(p.x, p.y, 0, p.x, p.y, 9)
-                core.addColorStop(0, 'rgba(231,251,255,0.96)')
-                core.addColorStop(0.2, 'rgba(140,223,255,0.8)')
-                core.addColorStop(1, 'rgba(53,148,255,0)')
+                core.addColorStop(0, tint(palette.core, 0.96))
+                core.addColorStop(0.2, tint(palette.halo, 0.8))
+                core.addColorStop(1, tint(palette.glow, 0))
                 context.fillStyle = core
                 context.beginPath()
                 context.arc(p.x, p.y, 9, 0, Math.PI * 2)

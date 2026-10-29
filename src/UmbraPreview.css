@@ -14,30 +14,42 @@
   border: 0;
   box-shadow: none;
   color: var(--moon);
-  background: #030910;
+  background: rgb(var(--umbra-ground));
   font-family: 'Segoe UI', sans-serif;
   color-scheme: dark;
 }
-.umbra-world, .umbra-atmosphere, .umbra-vignette, .umbra-passage { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-.umbra-world { z-index: -2; overflow: hidden; background: radial-gradient(ellipse at 50% 30%, #102230 0, #08131e 36%, #030910 76%); }
-.umbra-vignette { background: radial-gradient(ellipse at 50% 40%, transparent 20%, #02070c55 65%, #010508bf 100%); }
-.umbra-haze { position: absolute; width: 95%; height: 60%; border-radius: 50%; filter: blur(60px); opacity: 0.2; background: radial-gradient(ellipse, #1c6491 0, #1b456033 45%, transparent 70%); animation: umbra-drift 32s ease-in-out infinite alternate; transition: opacity 1.2s; }
+.umbra-world, .umbra-atmosphere, .umbra-vignette { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.umbra-world { z-index: -2; overflow: hidden; background: radial-gradient(ellipse at 50% 30%, rgb(var(--umbra-sky)) 0, rgb(var(--umbra-middle)) 36%, rgb(var(--umbra-ground)) 76%); }
+.umbra-vignette { background: radial-gradient(ellipse at 50% 40%, transparent 20%, rgb(1 3 5 / calc(0.33 + var(--depth) * 0.06)) 65%, rgb(0 1 3 / calc(0.75 + var(--depth) * 0.06)) 100%); }
+.umbra-haze { position: absolute; width: 95%; height: 60%; border-radius: 50%; filter: blur(60px); opacity: var(--haze-presence); background: radial-gradient(ellipse, rgb(var(--umbra-mist)) 0, rgb(var(--umbra-mist) / 0.2) 45%, transparent 70%); animation: umbra-drift 32s ease-in-out infinite alternate; transition: opacity 1.2s; }
 .haze-one { left: -25%; top: 25%; transform: rotate(-30deg); }
-.haze-two { right: -30%; top: -15%; background: radial-gradient(ellipse, #4d6387 0, #2a4d7033 48%, transparent 70%); animation-delay: -16s; }
-.umbra-preview[data-depth='1'] .umbra-haze { opacity: 0.32; }
-.umbra-preview[data-depth='2'] .umbra-haze { opacity: 0.5; }
-.umbra-preview[data-depth='3'] .umbra-haze { opacity: 0.6; }
-.umbra-horizon { position: absolute; bottom: -18%; left: -25%; width: 150%; height: 46%; border-radius: 50%; border-top: 1px solid #72bbdc29; background: radial-gradient(ellipse at 50% 0, #1d587044, transparent 65%); box-shadow: 0 -15px 100px #256c8724; transform: rotate(-8deg); transition: transform 1s, opacity 1s; }
-.umbra-preview[data-depth='2'] .umbra-horizon, .umbra-preview[data-depth='3'] .umbra-horizon { transform: rotate(4deg) translateY(12%); opacity: 0.5; }
-.umbra-seals { position: absolute; left: 50%; top: 48%; width: min(1000px, 110vw); height: auto; transform: translate(-50%, -50%) scale(0.88); color: #8ec5df; opacity: 0.14; transition: opacity 1.2s, transform 1.2s; }
+.haze-two { right: -30%; top: -15%; background: radial-gradient(ellipse, rgb(var(--umbra-mist) / 0.7) 0, rgb(var(--umbra-mist) / 0.2) 48%, transparent 70%); animation-delay: -16s; }
+.umbra-horizon { position: absolute; bottom: -18%; left: -25%; width: 150%; height: 46%; opacity: var(--horizon-presence); border-radius: 50%; border-top: 1px solid rgb(var(--umbra-edge) / 0.16); background: radial-gradient(ellipse at 50% 0, rgb(var(--umbra-mist) / 0.27), transparent 65%); box-shadow: 0 -15px 100px rgb(var(--umbra-glow) / 0.1); transform: rotate(-8deg); transition: transform 1s, opacity 1s; }
+.umbra-preview[data-depth='2'] .umbra-horizon, .umbra-preview[data-depth='3'] .umbra-horizon { transform: rotate(4deg) translateY(12%); }
+.umbra-seals { position: absolute; left: 50%; top: 48%; width: min(1000px, 110vw); height: auto; transform: translate(-50%, -50%) scale(0.88); color: rgb(var(--umbra-edge)); opacity: 0.14; transition: opacity 1.2s, transform 1.2s; }
 .umbra-preview[data-depth='1'] .umbra-seals { opacity: 0.26; transform: translate(-50%, -50%) scale(0.94) rotate(3deg); }
 .umbra-preview[data-depth='2'] .umbra-seals { opacity: 0.4; transform: translate(-50%, -50%) scale(1) rotate(7deg); }
 .umbra-preview[data-depth='3'] .umbra-seals { opacity: 0.8; transform: translate(-50%, -50%) scale(1.05) rotate(12deg); }
 .umbra-seal { opacity: 0.5; }
 .umbra-seal.luminous { opacity: 0.85; }
-.umbra-preview[data-depth='3'] .umbra-seal.luminous { color: #e2f9ff; filter: drop-shadow(0 0 8px #78cfff); }
-.umbra-passage { z-index: -1; background: radial-gradient(ellipse at 50% 42%, #82c9e21c, transparent 65%); animation: umbra-passage 850ms ease-out both; }
-.umbra-header { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin: 0; padding: 32px 44px; border: 0; }
+.umbra-preview[data-depth='3'] .umbra-seal.luminous { color: rgb(var(--umbra-filament)); filter: drop-shadow(0 0 8px rgb(var(--umbra-glow) / 0.8)); }
+.umbra-veil { display: none; position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+.umbra-veil-curtain { position: absolute; inset: -50% -20%; background: radial-gradient(ellipse at 30% 50%, rgb(var(--umbra-mist) / 0.4), transparent 48%), radial-gradient(ellipse at 75% 60%, rgb(var(--umbra-mist) / 0.55), transparent 45%), linear-gradient(180deg, transparent 25%, rgb(var(--umbra-middle) / 0.85) 48%, rgb(var(--umbra-mist) / 0.55) 58%, transparent 80%); opacity: 0; }
+.umbra-veil-ring { position: absolute; top: 44%; left: 50%; width: 75vmax; aspect-ratio: 1; border: 1px solid rgb(var(--umbra-filament) / 0.33); border-radius: 50%; box-shadow: 0 0 65px rgb(var(--umbra-glow) / 0.11), inset 0 0 95px rgb(var(--umbra-glow) / 0.13); opacity: 0; }
+.umbra-veil-grain { position: absolute; inset: 0; background: repeating-linear-gradient(104deg, transparent 0 11%, rgb(var(--umbra-filament) / 0.025) 11.1%, transparent 11.3% 24%); opacity: 0; }
+.umbra-preview:not([data-travel='idle']) .umbra-world { transform-origin: 50% 42%; will-change: transform, opacity, filter; }
+.umbra-preview[data-crossing='leaving'] .umbra-world { animation: umbra-world-out var(--leave-time) cubic-bezier(0.6, 0, 0.85, 0.5) both; }
+.umbra-preview[data-crossing='arriving'] .umbra-world { animation: umbra-world-in var(--arrive-time) cubic-bezier(0.15, 0.6, 0.25, 1) both; }
+.umbra-preview:not([data-travel='idle']) .umbra-veil { display: block; }
+.umbra-preview:not([data-travel='idle']) .umbra-veil-curtain { animation: umbra-veil-cross var(--journey-time) ease-in-out both; }
+.umbra-preview:not([data-travel='idle']) .umbra-veil-ring { animation: umbra-veil-ripple var(--journey-time) cubic-bezier(0.4, 0.1, 0.2, 1) both; }
+.umbra-preview:not([data-travel='idle']) .umbra-veil-ring:nth-child(3) { animation-delay: 40ms; border-color: rgb(var(--umbra-edge) / 0.17); width: 90vmax; }
+.umbra-preview:not([data-travel='idle']) .umbra-veil-ring:nth-child(4) { animation-delay: 70ms; border-color: rgb(var(--umbra-edge) / 0.11); width: 110vmax; }
+.umbra-preview:not([data-travel='idle']) .umbra-veil-grain { animation: umbra-veil-grain var(--journey-time) ease-out both; }
+.umbra-preview:not([data-travel='idle']) .umbra-moon { animation: umbra-moon-cross var(--journey-time) ease-in-out both; }
+.umbra-preview:not([data-travel='idle']) .umbra-whisper { opacity: 0; }
+.umbra-preview [aria-disabled='true'] { cursor: wait; }
+.umbra-header { position: relative; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 20px; margin: 0; padding: 32px 44px; border: 0; }
 .umbra-brand { display: flex; align-items: center; gap: 14px; color: #d6e4e9; text-decoration: none; font-family: Georgia, serif; font-size: 15px; letter-spacing: 0.025em; }
 .umbra-brand > span:first-child { font-family: Georgia, serif; font-size: 39px; line-height: 1; color: #97b8cb; }
 .umbra-brand small { display: block; margin-top: 6px; color: #8095a4; font-family: 'Segoe UI', sans-serif; font-size: 9px; text-transform: uppercase; letter-spacing: 0.2em; }
@@ -84,9 +96,38 @@
 .umbra-preview[data-paused='true'] *, .umbra-preview[data-paused='true'] *::before, .umbra-preview[data-paused='true'] *::after { animation-play-state: paused !important; }
 .umbra-preview[data-still='true'] .umbra-whisper-text { animation: none; }
 .umbra-preview[data-still='true'] .umbra-seals, .umbra-preview[data-still='true'] .umbra-haze, .umbra-preview[data-still='true'] .umbra-horizon { transition: none; }
-.umbra-preview[data-still='true'] .umbra-passage { display: none; }
+.umbra-preview[data-still='true'] .umbra-veil { display: none; }
+.umbra-preview[data-still='true'] .umbra-world, .umbra-preview[data-still='true'] .umbra-moon { animation: none; }
 @keyframes umbra-drift { from { translate: -3% -3%; rotate: -12deg; } to { translate: 9% 7%; rotate: 8deg; } }
-@keyframes umbra-passage { from { opacity: 0.8; scale: 0.94; } to { opacity: 0; scale: 1.12; } }
+@keyframes umbra-world-out {
+  from { transform: perspective(900px) translateY(0) translateZ(0); opacity: 1; filter: blur(0); }
+  to { transform: perspective(900px) translateY(calc(-9vh * var(--journey-direction))) translateZ(-420px); opacity: 0; filter: blur(2px); }
+}
+@keyframes umbra-world-in {
+  from { transform: perspective(900px) translateY(calc(12vh * var(--journey-direction))) translateZ(-300px); opacity: 0; filter: blur(2px); }
+  to { transform: perspective(900px) translateY(0) translateZ(0); opacity: 1; filter: blur(0); }
+}
+@keyframes umbra-veil-cross {
+  0% { transform: translateY(calc(45% * var(--journey-direction))); opacity: 0; }
+  35% { opacity: 0.85; }
+  55% { opacity: 1; }
+  100% { transform: translateY(calc(-45% * var(--journey-direction))); opacity: 0; }
+}
+@keyframes umbra-veil-ripple {
+  0% { transform: translate(-50%, -50%) perspective(800px) rotateX(28deg) scale(0.17); opacity: 0; }
+  28% { opacity: 0.25; }
+  55% { opacity: 0.6; }
+  100% { transform: translate(-50%, -50%) perspective(800px) rotateX(6deg) scale(2.65); opacity: 0; }
+}
+@keyframes umbra-veil-grain {
+  0%, 100% { opacity: 0; transform: scale(0.9); }
+  45% { opacity: 0.65; transform: scale(1.15); }
+}
+@keyframes umbra-moon-cross {
+  0%, 100% { transform: translateY(0) scale(1); opacity: 1; }
+  42% { transform: translateY(calc(-18px * var(--journey-direction))) scale(0.85); opacity: 0.18; }
+  48% { transform: translateY(calc(16px * var(--journey-direction))) scale(0.9); opacity: 0.18; }
+}
 @keyframes umbra-whisper { 0% { opacity: 0; } 12%, 60% { opacity: 0.9; } 100% { opacity: 0; } }
 @media (min-width: 1600px) { .umbra-copy { padding-top: 5vh; padding-bottom: 7vh; } }
 @media (max-width: 1100px) {

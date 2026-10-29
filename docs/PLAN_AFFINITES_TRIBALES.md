@@ -2,17 +2,17 @@
 
 Date : 29 octobre 2026.
 Projet : Garou_Test — campagne « It's a King of Magic ».
-Statut : thème de la première itération du lot 1 validé explicitement par Fabien. La véritable animation de descente et la rupture initiale restent à réaliser. Les questions et le calcul des affinités restent à construire.
+Statut : thème et approfondissement visuel appréciés par Fabien. La rupture initiale est raccordée à la fin du volet médical ; elle mène à l’appel spirituel puis à quatre situations provisoires jouables. Le contenu définitif, les affinités et le choix tribal restent à construire.
 
 ## 1. Intention et décisions retenues
 
 - Le site quitte progressivement son apparence administrative pour devenir pleinement Garou, lunaire et spirituel.
 - La rupture donne momentanément l’impression d’un plantage. Les réponses et la navigation restent réellement protégées.
 - Une phrase apparaît entière, sans effet de frappe :
-  > Oubliez l'Humain.. Laissez parler le Loup en vous. Que feriez vous vraiment, débarrassé de la peau d'homme ?
+  > Oubliez l’humain en vous… Laissez parler le Loup… Que feriez-vous, débarrassé de la peau d’homme ?
 - Le questionnaire suit cette entrée. Il concerne le personnage que le joueur veut incarner.
 - Chaque réponse validée accompagne un passage vers davantage de profondeur.
-- Des wisps bleutés, des lumières argentées, des brumes et des signes composent la présence umbrale.
+- Des wisps initialement bleutés, des lumières argentées, des brumes et des signes composent la présence umbrale. À la demande de Fabien, chaque descente assombrit le décor et fait évoluer les wisps vers un vert spectral.
 - L’IA continue à parler par fragments : apparitions brèves en scramble, avec une sélection adaptée à la progression.
 - Après le questionnaire, les principales affinités apparaissent dans une surbrillance éthérée et lunaire.
 - Les autres Tribus restent présentes, flottantes et plus lointaines. Leurs noms et leurs accès demeurent lisibles.
@@ -79,9 +79,47 @@ Fichiers : `src/RootScreen.tsx`, `src/UmbraPreview.tsx`, `src/UmbraAtmosphere.ts
 
 Validation de Fabien : thème pleinement approuvé (« je valide à fond ce thème »). Cette ambiance devient la référence visuelle pour la suite.
 
-Clarification confirmée avec Fabien : les quatre paliers actuels changent la présence visuelle ; ils ne réalisent pas encore une descente à travers le voile. Le faux plantage initial est également à construire.
+Clarification confirmée avec Fabien lors de la première itération : les quatre paliers changeaient la présence visuelle sans réaliser encore une descente à travers le voile. Le faux plantage initial est également à construire.
 
 Prochains checkpoints : enregistrer le thème validé dans un commit exécuté par Fabien ; construire la descente entre deux paliers (décor qui s’éloigne, traversée d’un voile, nouveau plan qui émerge) ; puis réaliser la rupture administrative initiale et l’entrée progressive. Les textes et commandes doivent retrouver leur stabilité après chaque passage. Le lot 1 reste ouvert jusqu’à ces réalisations et à leur validation.
+
+#### Journal — descente du 29 octobre 2026
+
+Fabien a confirmé une copie de travail propre après le commit du thème. La descente est désormais réalisée dans l’aperçu : recul du décor pendant 420 ms, franchissement par une nappe de brume et des ondes lunaires, puis émergence du plan suivant pendant 540 ms. Le retour vers les paliers précédents utilise le mouvement inverse. La phrase et les commandes gardent leur position.
+
+Un contrôleur indépendant sépare le départ, le franchissement et l’arrivée. Il ignore les clics supplémentaires pendant le passage, conserve le focus et permet une arrivée immédiate lorsque la scène est immobilisée. La préférence de mouvement réduit est prise en charge ; une interruption ou la disparition de l’onglet ne doit pas laisser la navigation bloquée.
+
+Vérifié : compilation et lint réussis ; 51 tests passent, dont cinq tests de progression, clics répétés, interruptions, navigation sans mouvement et événements hors séquence. Dans le navigateur : départ et arrivée observés, quatre paliers parcourus au clavier, double clic sans saut de palier, remontée, pause pendant le passage, navigation immédiate en pause et absence de débordement à 320 px pendant et après l’animation. Aucune erreur ou alerte de console relevée. La bascule effective de la préférence système de mouvement réduit n’a pas été exercée.
+
+Fichiers de cette itération : `src/umbraJourney.ts`, `src/UmbraPreview.tsx`, `src/UmbraPreview.css` et `tests/umbraJourney.test.mjs`. Le raccord au questionnaire et la rupture initiale restent hors de cette itération. Fabien doit maintenant valider la sensation de descente.
+
+#### Journal — obscurité et couleurs spirituelles du 29 octobre 2026
+
+Demande de Fabien : renforcer la présence umbrale en assombrissant l’écran et en faisant évoluer les feux follets vers le vert au fil des descentes.
+
+Réalisé : quatre palettes communes au canvas et au décor CSS, dans `src/umbraPalette.ts` : bleu lunaire, turquoise, jade et vert spectral pâle. Le fond s’assombrit à chaque palier ; étoiles et horizon s’effacent progressivement. Les noyaux, halos, traînes, brumes, marques et voiles suivent la palette. Les textes et la lune gardent leur clarté argentée. Le retour à la lisière restaure la première palette.
+
+Recherche : la [présentation officielle de W20 — Umbra: The Velvet Shadow, par Onyx Path](https://theonyxpath.com/now-available-book-of-the-wyrm-and-umbra-the-velvet-shadow/) présente une Umbra animiste, la Pénumbra, les royaumes de l’Umbra proche et des voyages par les Ponts de Lune. Notre traduction artistique vise l’éloignement des repères humains et la présence croissante des esprits. Les quatre palettes sont une interprétation visuelle libre, pas une classification canonique des royaumes. La recherche porte sur cette présentation éditoriale ; elle ne constitue pas une lecture complète du supplément.
+
+Vérifié : compilation et lint réussis ; 51 tests passent. Les quatre couleurs de décor et de wisps ont été parcourues dans le navigateur ; le retour au bleu fonctionne. Aucun débordement à 320 px au dernier palier, texte clair conservé et aucune erreur de console relevée. Captures conservées des ambiances initiale et finale.
+
+#### Journal — raccord médical et quatre situations provisoires du 29 octobre 2026
+
+Demande de Fabien : relier les deux questionnaires par une prise de contrôle brutale et saccadée, laisser apparaître le message spirituel, le faire disparaître lentement et présenter quatre questions provisoires, une par niveau.
+
+Réalisé : le bouton « Continuer » des Historiques valide réellement le volet puis déclenche une rupture de 2,2 secondes sur le formulaire médical existant. L’interface se disloque par décalages et découpes, perd sa liaison, puis cède à l’Umbra. Le formulaire est temporairement inerte ; les réponses médicales restent conservées. En mouvement réduit, le passage devient une coupure calme et brève.
+
+Le nouvel appel suit la dernière formulation de Fabien. Il apparaît entier, dispose d’environ 6,5 secondes de lecture, puis s’efface sur 2,2 secondes avant la première situation. « Lire à mon rythme » suspend ce passage ; « Entrer dans le voile » permet d’avancer volontairement. La lecture est suspendue lorsque l’onglet est masqué et le mouvement réduit garde un passage manuel.
+
+Le parcours comporte quatre situations et quatre réponses A/B/C/D volontairement provisoires. Un choix explicite permet de valider puis descendre. Une situation correspond à un palier ; le retour remonte au précédent et conserve les réponses. La quatrième validation termine l’essai sans calculer d’affinité ni attribuer de Tribu.
+
+La sauvegarde du brouillon umbral est versionnée et séparée des réponses médicales dans le même dossier. Après rechargement, le parcours retrouve la situation et les choix, sans rejouer la rupture lorsque l’appel a déjà été passé. Les nouveaux champs passent par le mécanisme de sauvegarde existant ; aucune modification de schéma ou de droits distants n’a été nécessaire.
+
+La scène est désormais partagée dans `src/UmbraScene.tsx` ; `?screen=umbra` conserve l’aperçu libre. Un aperçu de développement séparé, `?screen=passage`, permet d’essayer le raccord depuis les Historiques avec son propre brouillon. Le rejeu volontaire, disponible seulement en développement, réinitialise les réponses provisoires et conserve le volet médical. Les composants de la traversée font maintenant partie du parcours normal compilé ; les accès d’aperçu restent réservés au développement.
+
+Vérifié : 57 tests passent, compilation et lint réussis. Dans le navigateur : bouton bloqué avant répartition des points, rupture du formulaire, apparition de l’appel puis de la première situation, lecture libre, quatre réponses et trois descentes, reprise à la deuxième situation avec son choix, retour conservant le premier choix, fin au quatrième niveau, consultation et rejeu. Contrôle à 320 px sans débordement, focus rétabli sur les titres, retour au médical avec points conservés et absence d’erreur de console. L’acheminement email et la sauvegarde avec de vrais comptes restent à tester lors de l’activation.
+
+Prochain checkpoint : Fabien juge la prise de contrôle et le rythme de l’appel. Les textes du QCM, le référentiel tribal et la matrice d’affinités restent à valider avant de remplacer les placeholders.
 
 ### Lot 2 — Référentiel des treize Tribus
 
@@ -164,10 +202,12 @@ Objectif : assembler les questions, les effets et le choix.
 
 Objectif : intégrer la nouvelle étape au questionnaire existant.
 
-Constat local au 29 octobre :
+Constat initial avant le raccord :
 - App.tsx s’arrête actuellement à la phase « backgrounds ».
 - Le bouton « Continuer » des Historiques confirme le volet puis devient « Validé ».
 - Il faut ajouter le passage vers la traversée et tester le retour.
+
+Raccord provisoire désormais réalisé : phase « umbra », bouton final relié à la prise de contrôle, appel et quatre situations persistées. Le parcours complet a été essayé dans le navigateur avec le brouillon de développement. Les contenus définitifs et les essais de sauvegarde avec de vrais comptes restent ouverts.
 
 À produire :
 - Raccord après validation réelle des Historiques.
@@ -234,7 +274,11 @@ Ces questions n’empêchent pas le prototype :
 
 - [x] Conserver les sources et les décisions dans le projet.
 - [x] Lot 1 — Thème lunaire et wisps validés par Fabien.
-- [ ] Lot 1 — Animation de descente et rupture initiale réalisées et validées.
+- [x] Lot 1 — Animation de descente réalisée et testée.
+- [ ] Lot 1 — Sensation de descente validée par Fabien.
+- [x] Lot 1 — Rupture initiale réalisée et testée.
+- [ ] Lot 1 — Prise de contrôle et rythme de l’appel validés par Fabien.
+- [x] Parcours provisoire — Raccord médical et quatre situations jouables, avec reprise.
 - [ ] Lot 2 — Référentiel tribal validé.
 - [ ] Lot 3 — Questions et matrice validées.
 - [ ] Lot 4 — Calcul testé.
@@ -244,5 +288,5 @@ Ces questions n’empêchent pas le prototype :
 
 Pour chaque lot, mettre à jour ce document avec le résultat observé, les décisions prises et les points encore ouverts. Fabien valide le contenu et le ressenti. Zia implémente dans le périmètre demandé ; Fabien exécute les commandes Git.
 
-Prochaine action : guider Fabien pour enregistrer le thème validé dans Git, puis réaliser et faire essayer la véritable descente entre deux paliers. La rupture initiale viendra ensuite.
+Prochaine action : faire essayer la prise de contrôle et les quatre situations à Fabien, puis ajuster le rythme. Après validation et point de sauvegarde Git exécuté par Fabien, poursuivre le référentiel tribal et le contenu réel du questionnaire.
 
