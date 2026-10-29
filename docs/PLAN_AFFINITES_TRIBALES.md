@@ -2,7 +2,7 @@
 
 Date : 29 octobre 2026.
 Projet : Garou_Test — campagne « It's a King of Magic ».
-Statut : cadrage et plan de réalisation ; aucun nouvel écran ni calcul d’affinité implémenté par ce document.
+Statut : thème de la première itération du lot 1 validé explicitement par Fabien. La véritable animation de descente et la rupture initiale restent à réaliser. Les questions et le calcul des affinités restent à construire.
 
 ## 1. Intention et décisions retenues
 
@@ -66,6 +66,22 @@ Terminé lorsque :
 - Le prototype fonctionne au clavier et sur mobile.
 - Les effets se mettent au repos lorsque l’onglet est masqué et sont nettoyés à la sortie.
 - La rupture n’endommage ni les réponses existantes ni leur sauvegarde.
+
+#### Journal — première itération du 29 octobre 2026
+
+Réalisé : aperçu de développement `?screen=umbra`, quatre paliers navigables, wisps bleutés, lune argentée, brumes, marques abstraites qui se révèlent et fragments courts de l’IA avec scramble fini. La phrase d’entrée reste lisible et entière. La scène peut être immobilisée ; elle respecte la préférence de mouvement réduit et suspend ses animations lorsque l’onglet est masqué.
+
+Les marques sont des dessins d’essai, pas les sceaux validés des Tribus. Les paliers ne représentent pas des résultats calculés. Cet aperçu ne lit ni n’enregistre les réponses du questionnaire.
+
+Vérifié : compilation, lint et 46 tests existants ; parcours des quatre paliers au clavier et conservation du focus ; commande de pause ; ouverture des Connaissances et de l’identification existantes. Contrôle des mises en page ordinateur et téléphone, avec correction d’un débordement à 320 px. La préférence système de mouvement réduit est prise en charge dans le code ; la commande de pause a été exercée dans le navigateur.
+
+Fichiers : `src/RootScreen.tsx`, `src/UmbraPreview.tsx`, `src/UmbraAtmosphere.tsx`, `src/UmbraPreview.css` et raccord dans `src/main.tsx`. L’aperçu est exclu de la compilation de publication.
+
+Validation de Fabien : thème pleinement approuvé (« je valide à fond ce thème »). Cette ambiance devient la référence visuelle pour la suite.
+
+Clarification confirmée avec Fabien : les quatre paliers actuels changent la présence visuelle ; ils ne réalisent pas encore une descente à travers le voile. Le faux plantage initial est également à construire.
+
+Prochains checkpoints : enregistrer le thème validé dans un commit exécuté par Fabien ; construire la descente entre deux paliers (décor qui s’éloigne, traversée d’un voile, nouveau plan qui émerge) ; puis réaliser la rupture administrative initiale et l’entrée progressive. Les textes et commandes doivent retrouver leur stabilité après chaque passage. Le lot 1 reste ouvert jusqu’à ces réalisations et à leur validation.
 
 ### Lot 2 — Référentiel des treize Tribus
 
@@ -217,7 +233,8 @@ Ces questions n’empêchent pas le prototype :
 ## 7. Suivi et discipline
 
 - [x] Conserver les sources et les décisions dans le projet.
-- [ ] Lot 1 — Prototype visuel validé.
+- [x] Lot 1 — Thème lunaire et wisps validés par Fabien.
+- [ ] Lot 1 — Animation de descente et rupture initiale réalisées et validées.
 - [ ] Lot 2 — Référentiel tribal validé.
 - [ ] Lot 3 — Questions et matrice validées.
 - [ ] Lot 4 — Calcul testé.
@@ -227,5 +244,5 @@ Ces questions n’empêchent pas le prototype :
 
 Pour chaque lot, mettre à jour ce document avec le résultat observé, les décisions prises et les points encore ouverts. Fabien valide le contenu et le ressenti. Zia implémente dans le périmètre demandé ; Fabien exécute les commandes Git.
 
-Première prochaine action : réaliser uniquement le prototype du lot 1, puis le faire essayer à Fabien.
+Prochaine action : guider Fabien pour enregistrer le thème validé dans Git, puis réaliser et faire essayer la véritable descente entre deux paliers. La rupture initiale viendra ensuite.
 

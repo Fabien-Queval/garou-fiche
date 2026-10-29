@@ -1,0 +1,131 @@
+.umbra-preview-body { min-width: 0; background: #030910; }
+.umbra-preview {
+  --moon: #d4e6ed;
+  --blue: #7cbbdd;
+  isolation: isolate;
+  position: relative;
+  width: 100%;
+  min-height: 100svh;
+  overflow: clip;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+  color: var(--moon);
+  background: #030910;
+  font-family: 'Segoe UI', sans-serif;
+  color-scheme: dark;
+}
+.umbra-world, .umbra-atmosphere, .umbra-vignette, .umbra-passage { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.umbra-world { z-index: -2; overflow: hidden; background: radial-gradient(ellipse at 50% 30%, #102230 0, #08131e 36%, #030910 76%); }
+.umbra-vignette { background: radial-gradient(ellipse at 50% 40%, transparent 20%, #02070c55 65%, #010508bf 100%); }
+.umbra-haze { position: absolute; width: 95%; height: 60%; border-radius: 50%; filter: blur(60px); opacity: 0.2; background: radial-gradient(ellipse, #1c6491 0, #1b456033 45%, transparent 70%); animation: umbra-drift 32s ease-in-out infinite alternate; transition: opacity 1.2s; }
+.haze-one { left: -25%; top: 25%; transform: rotate(-30deg); }
+.haze-two { right: -30%; top: -15%; background: radial-gradient(ellipse, #4d6387 0, #2a4d7033 48%, transparent 70%); animation-delay: -16s; }
+.umbra-preview[data-depth='1'] .umbra-haze { opacity: 0.32; }
+.umbra-preview[data-depth='2'] .umbra-haze { opacity: 0.5; }
+.umbra-preview[data-depth='3'] .umbra-haze { opacity: 0.6; }
+.umbra-horizon { position: absolute; bottom: -18%; left: -25%; width: 150%; height: 46%; border-radius: 50%; border-top: 1px solid #72bbdc29; background: radial-gradient(ellipse at 50% 0, #1d587044, transparent 65%); box-shadow: 0 -15px 100px #256c8724; transform: rotate(-8deg); transition: transform 1s, opacity 1s; }
+.umbra-preview[data-depth='2'] .umbra-horizon, .umbra-preview[data-depth='3'] .umbra-horizon { transform: rotate(4deg) translateY(12%); opacity: 0.5; }
+.umbra-seals { position: absolute; left: 50%; top: 48%; width: min(1000px, 110vw); height: auto; transform: translate(-50%, -50%) scale(0.88); color: #8ec5df; opacity: 0.14; transition: opacity 1.2s, transform 1.2s; }
+.umbra-preview[data-depth='1'] .umbra-seals { opacity: 0.26; transform: translate(-50%, -50%) scale(0.94) rotate(3deg); }
+.umbra-preview[data-depth='2'] .umbra-seals { opacity: 0.4; transform: translate(-50%, -50%) scale(1) rotate(7deg); }
+.umbra-preview[data-depth='3'] .umbra-seals { opacity: 0.8; transform: translate(-50%, -50%) scale(1.05) rotate(12deg); }
+.umbra-seal { opacity: 0.5; }
+.umbra-seal.luminous { opacity: 0.85; }
+.umbra-preview[data-depth='3'] .umbra-seal.luminous { color: #e2f9ff; filter: drop-shadow(0 0 8px #78cfff); }
+.umbra-passage { z-index: -1; background: radial-gradient(ellipse at 50% 42%, #82c9e21c, transparent 65%); animation: umbra-passage 850ms ease-out both; }
+.umbra-header { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin: 0; padding: 32px 44px; border: 0; }
+.umbra-brand { display: flex; align-items: center; gap: 14px; color: #d6e4e9; text-decoration: none; font-family: Georgia, serif; font-size: 15px; letter-spacing: 0.025em; }
+.umbra-brand > span:first-child { font-family: Georgia, serif; font-size: 39px; line-height: 1; color: #97b8cb; }
+.umbra-brand small { display: block; margin-top: 6px; color: #8095a4; font-family: 'Segoe UI', sans-serif; font-size: 9px; text-transform: uppercase; letter-spacing: 0.2em; }
+.umbra-preview-label { display: flex; align-items: center; gap: 10px; color: #8c9da9; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; }
+.umbra-preview-label i { width: 4px; height: 4px; border-radius: 50%; background: #89bfd6; box-shadow: 0 0 10px #75c6ef; }
+.umbra-depths { position: absolute; left: 44px; top: 46%; transform: translateY(-50%); z-index: 2; }
+.umbra-depths ol { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.umbra-depths li { position: relative; }
+.umbra-depths li:not(:last-child)::after { content: ''; position: absolute; left: 12px; top: 37px; height: 20px; border-left: 1px solid #7798b023; }
+.umbra-depths button { position: relative; display: flex; align-items: center; gap: 14px; min-height: 48px; margin: 0; padding: 8px 0; background: transparent; border: 0; color: #8b9ba7; font-size: 10px; text-align: left; }
+.umbra-depth-number { font-size: 9px; font-variant-numeric: tabular-nums; letter-spacing: 0.06em; width: 25px; text-align: center; }
+.umbra-depth-name { letter-spacing: 0.04em; }
+.umbra-depths [aria-current='step'] { color: #e0f0f6; }
+.umbra-depths [aria-current='step'] .umbra-depth-number { text-shadow: 0 0 14px #8cd9ff; }
+.umbra-depth-dot { width: 3px; height: 3px; border-radius: 50%; background: transparent; }
+.umbra-depths [aria-current='step'] .umbra-depth-dot { background: #bdeaff; box-shadow: 0 0 12px #92ddff; }
+.umbra-copy { flex: 1; position: relative; z-index: 1; width: min(760px, 100%); margin: 0 auto; padding: 7px 30px 60px; text-align: center; }
+.umbra-moon { display: block; width: 136px; height: 136px; margin: 0 auto 20px; color: #a8c6d6; filter: drop-shadow(0 0 27px #a5d7fb28); }
+.umbra-kicker { display: flex; align-items: center; justify-content: center; gap: 15px; margin: 0 0 27px; color: #94acbc; font-size: 9px; letter-spacing: 0.26em; text-transform: uppercase; }
+.umbra-kicker span { display: block; width: 23px; height: 1px; background: #9ab9ce4a; }
+.umbra-copy h1 { margin: 0; color: #e2edf0; font-family: Georgia, 'Times New Roman', serif; font-size: clamp(42px, 5.2vw, 76px); font-weight: 400; letter-spacing: -0.055em; line-height: 1.16; text-shadow: 0 0 38px #a3d0e32b; }
+.umbra-copy h1 em { font-weight: 400; color: #a9c9da; }
+.umbra-invitation { margin: 17px 0 0; color: #c6d6df; font-family: Georgia, serif; font-size: clamp(21px, 2.3vw, 29px); letter-spacing: -0.015em; line-height: 1.4; }
+.umbra-divider { display: flex; justify-content: center; align-items: center; gap: 12px; margin: 26px auto 22px; color: #7898b0; font-size: 10px; }
+.umbra-divider span { width: 45px; height: 1px; background: linear-gradient(90deg, transparent, #85a3b945); }
+.umbra-divider span:last-child { transform: rotate(180deg); }
+.umbra-question { margin: 0; color: #9cafbc; font-size: 14px; line-height: 1.85; font-weight: 300; letter-spacing: 0.02em; }
+.umbra-current { display: flex; justify-content: center; gap: 14px; align-items: center; width: fit-content; margin: 38px auto 0; color: #c5d9e5; text-align: left; font-size: 12px; }
+.umbra-current-number { padding-right: 14px; border-right: 1px solid #80a4bd38; color: #8eafc5; font-family: Georgia, serif; font-size: 28px; }
+.umbra-current small { display: block; margin-top: 5px; color: #8fa6b7; font-size: 9px; letter-spacing: 0.17em; text-transform: uppercase; }
+.umbra-descend { display: flex; justify-content: space-between; align-items: center; gap: 24px; min-width: 239px; min-height: 50px; margin: 26px auto 0; padding: 15px 20px; border: 1px solid #87b0c45c; border-radius: 0; color: #d7e9f0; background: linear-gradient(120deg, #3d71852c, #47758b0b); box-shadow: inset 0 0 22px #85bdd807, 0 0 30px #5086b009; font-size: 12px; letter-spacing: 0.08em; transition: border-color 200ms, background 200ms; }
+.umbra-descend:hover { border-color: #9ecbdfb3; background: #6c9eb82b; }
+.umbra-descend > span:last-child { color: #a3ccdf; font-size: 19px; line-height: 1; }
+.umbra-demo-note { margin: 12px 0 0; color: #8399a9; font-size: 9px; letter-spacing: 0.055em; }
+.umbra-whisper { position: absolute; top: 37%; right: 38px; display: flex; align-items: center; gap: 10px; max-width: 195px; color: #7ca2b9; font-family: Consolas, monospace; font-size: 9px; letter-spacing: 0.1em; line-height: 1.8; pointer-events: none; }
+.umbra-whisper-mark { font-size: 21px; opacity: 0.65; }
+.umbra-whisper-text { animation: umbra-whisper 8s ease-out both; overflow-wrap: anywhere; }
+.umbra-footer { position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 20px; margin: 0 44px; padding: 22px 0 25px; border-top: 1px solid #7199b221; color: #849aab; font-size: 10px; letter-spacing: 0.04em; line-height: 1.6; }
+.umbra-footer > span:first-child { font-family: Georgia, serif; font-style: italic; font-size: 12px; }
+.umbra-pause { margin: 0; padding: 10px 6px; min-height: 44px; border: 0; background: transparent; color: #9cb2c2; font-size: 10px; letter-spacing: 0.04em; }
+.umbra-pause:disabled { opacity: 0.8; }
+.umbra-footer-depth b { margin-left: 18px; color: #bad0df; font-size: 10px; font-weight: 400; font-variant-numeric: tabular-nums; }
+.umbra-preview a:focus-visible, .umbra-preview button:focus-visible { outline: 2px solid #a9e5ff; outline-offset: 5px; }
+.umbra-preview[data-paused='true'] *, .umbra-preview[data-paused='true'] *::before, .umbra-preview[data-paused='true'] *::after { animation-play-state: paused !important; }
+.umbra-preview[data-still='true'] .umbra-whisper-text { animation: none; }
+.umbra-preview[data-still='true'] .umbra-seals, .umbra-preview[data-still='true'] .umbra-haze, .umbra-preview[data-still='true'] .umbra-horizon { transition: none; }
+.umbra-preview[data-still='true'] .umbra-passage { display: none; }
+@keyframes umbra-drift { from { translate: -3% -3%; rotate: -12deg; } to { translate: 9% 7%; rotate: 8deg; } }
+@keyframes umbra-passage { from { opacity: 0.8; scale: 0.94; } to { opacity: 0; scale: 1.12; } }
+@keyframes umbra-whisper { 0% { opacity: 0; } 12%, 60% { opacity: 0.9; } 100% { opacity: 0; } }
+@media (min-width: 1600px) { .umbra-copy { padding-top: 5vh; padding-bottom: 7vh; } }
+@media (max-width: 1100px) {
+  .umbra-header { padding: 26px 28px; }
+  .umbra-depths { left: 28px; }
+  .umbra-depth-name { display: none; }
+  .umbra-whisper { right: 24px; max-width: 110px; font-size: 8px; }
+  .umbra-footer { margin: 0 28px; }
+  .umbra-copy { width: min(680px, calc(100% - 130px)); }
+}
+@media (max-width: 680px) {
+  .umbra-header { padding: 23px 22px; align-items: flex-start; }
+  .umbra-brand { font-size: 12px; gap: 8px; }
+  .umbra-brand > span:first-child { font-size: 31px; }
+  .umbra-brand small { font-size: 8px; letter-spacing: 0.12em; }
+  .umbra-preview-label { font-size: 8px; max-width: 65px; line-height: 1.6; gap: 7px; }
+  .umbra-preview-label i { flex: 0 0 4px; }
+  .umbra-depths { position: relative; top: auto; left: auto; transform: none; margin: 6px auto 0; }
+  .umbra-depths ol { display: flex; gap: 20px; }
+  .umbra-depths button { min-width: 44px; justify-content: center; padding: 10px 0; }
+  .umbra-depths li:not(:last-child)::after { left: 48px; top: 24px; width: 12px; height: 0; border-top: 1px solid #7798b037; border-left: 0; }
+  .umbra-depth-dot { position: absolute; bottom: 4px; }
+  .umbra-copy { width: 100%; padding: 18px 24px 80px; }
+  .umbra-moon { width: 115px; height: 115px; margin-bottom: 24px; }
+  .umbra-kicker { font-size: 8px; letter-spacing: 0.15em; gap: 9px; margin-bottom: 24px; }
+  .umbra-kicker span { width: 12px; }
+  .umbra-copy h1 { max-width: 440px; margin: 0 auto; font-size: clamp(39px, 9vw, 58px); line-height: 1.18; }
+  .umbra-copy h1 em { display: block; }
+  .umbra-invitation { max-width: 280px; margin: 18px auto 0; font-size: 22px; }
+  .umbra-question { font-size: 13px; }
+  .umbra-divider { margin: 24px 0 20px; }
+  .umbra-current { margin-top: 30px; }
+  .umbra-descend { margin-top: 24px; min-width: 236px; }
+  .umbra-whisper { position: absolute; top: auto; bottom: 112px; left: 24px; right: 24px; justify-content: center; max-width: none; text-align: center; font-size: 8px; }
+  .umbra-footer { margin: 0 22px; padding: 16px 0 20px; flex-wrap: wrap; gap: 4px 12px; }
+  .umbra-footer > span:first-child { width: 100%; font-size: 11px; }
+  .umbra-footer-depth { margin-left: auto; font-size: 8px; }
+  .umbra-footer-depth b { margin-left: 8px; font-size: 9px; }
+  .umbra-pause { padding-left: 0; font-size: 9px; }
+  .umbra-seals { top: 46%; width: 190vw; }
+}
+@media (prefers-reduced-motion: reduce) { .umbra-preview *, .umbra-preview *::before, .umbra-preview *::after { animation: none !important; transition: none !important; } }
