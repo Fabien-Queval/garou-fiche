@@ -1,8 +1,23 @@
 # Plan d’attaque — Affinités tribales et traversée umbrale
 
-Date : 29 octobre 2026.
+Date : 30 octobre 2026.
 Projet : Garou_Test — campagne « It's a King of Magic ».
-Statut : thème et approfondissement visuel appréciés par Fabien. La rupture initiale est raccordée à la fin du volet médical ; elle mène à l’appel spirituel puis à quatre situations provisoires jouables. Le contenu définitif, les affinités et le choix tribal restent à construire.
+Statut : rupture et ambiance validées par Fabien. Les seize questions définitives et leur scoring interne P/A/D/C sont intégrés ; la révélation et le choix parmi les treize Tribus restent à construire.
+
+## Suite validée avec Fabien — reprise dans un autre fil
+
+Décisions du 30 octobre 2026. Cette liste est le point de reprise prioritaire. Ce soir, seule la documentation est mise à jour : ne pas commencer l’implémentation des effets ou des écrans suivants.
+
+Ordre du parcours restant :
+
+1. [ ] **Glitchs graduels pendant le questionnaire.** Réutiliser la hiérarchie de `docs/tribes/LEXIQUE_SOURCE.md`, selon l’avancement dans les seize questions et les quatre ambiances. Q01–Q04 : discrets et anecdotiques ; Q05–Q08 : plus perceptibles ; Q09–Q12 : inquiétants et plus présents ; Q13–Q16 : graduellement envahissants. Mots et fragments en scramble fini, tailles et positions aléatoires, dédoublement vert/rouge façon lunettes 3D comme dans la partie médicale. Garder des accalmies et la lisibilité des réponses. L’intensité dépend de la progression, jamais des réponses choisies ; la lecture prolongée ne doit pas l’augmenter indéfiniment. Les fragments les plus profonds restent des intrusions possibles, sans imposer une destination réelle comme Malfeas.
+2. [ ] **Révélation du groupe de Tribus le plus en résonance.** Après Q16, présenter le « pack de clans » qui résonne le plus avec le personnage, avec une mise en lumière éthérée, umbrale et lunaire. Le questionnaire suggère une famille de philosophies ; il n’assigne pas une Tribu. Prévoir les égalités sans inventer de pondérations secondaires. Toutes les treize Tribus restent visibles et accessibles.
+3. [ ] **Cartes d’information et choix de la Tribu.** Proposer différentes cartes de Tribus avec des informations explicitement HRP : philosophie, informations méta et de jeu, particularités et conditions de création utiles. Le joueur consulte les cartes pour choisir librement sa Tribu. Le résultat ne verrouille aucune option ; une éventuelle validation MJ demeure distincte.
+4. [ ] **Choix de l’Auspice.** Étape beaucoup plus courte : un choix direct, sans nouveau long questionnaire. Ciel étoilé, lune qui se déplace et animation adaptée à la phase parcourue : nouvelle lune, croissante, demi-lune, gibbeuse, pleine lune. Un texte présente l’Auspice correspondant ; le joueur découvre puis confirme son choix. Le mouvement sert la découverte et laisse le texte lisible. Les descriptions et détails de présentation restent à préparer.
+5. [ ] **Apothéose après le choix de l’Auspice.** Réserver le sommet de la mise en scène à la toute fin du parcours en ligne. Direction discutée : dernière poussée du dérèglement, puis silence et présence lunaire, avec une conclusion claire. Le rythme, les textes et la réalisation précise restent à valider avec Fabien.
+6. [ ] **Relais à la séance 0 IRL.** La finition des personnages se fera autour de la table, hors du site. Ne pas étendre automatiquement le questionnaire à toute la finalisation de fiche.
+
+Les vérifications de sauvegarde, l’hébergement et les prérequis de publication indiqués plus bas restent à traiter séparément. Zia prépare et implémente les éléments autorisés ; Fabien garde l’exécution des commandes Git.
 
 ## 1. Intention et décisions retenues
 
@@ -27,8 +42,9 @@ Ces décisions prolongent les échanges avec Fabien. Les formulations supplémen
 
 - [Brief UX/UI initial](tribes/BRIEF_UX_UI_SOURCE.md).
 - [Réservoir de mots et fragments proposé](tribes/LEXIQUE_SOURCE.md).
+- [Questionnaire définitif et clé technique validés](tribes/QUESTIONNAIRE_SOURCE.md).
 
-Les deux sources sont copiées intégralement depuis les textes joints par Fabien. Le brief initial décrit une façade administrative encore visible : la décision ultérieure de basculer pleinement Garou prévaut.
+Les trois sources sont copiées intégralement depuis les textes joints par Fabien. Le brief initial décrit une façade administrative encore visible : la décision ultérieure de basculer pleinement Garou prévaut.
 
 Les mentions « canonique », les explications de lore et les liens du lexique sont des affirmations de sa source. Ils restent à vérifier dans la référence W20 retenue avant de constituer les données finales. Les fragments suggérés ne deviennent pas automatiquement des événements de la campagne.
 
@@ -275,12 +291,12 @@ Ces questions n’empêchent pas le prototype :
 - [x] Conserver les sources et les décisions dans le projet.
 - [x] Lot 1 — Thème lunaire et wisps validés par Fabien.
 - [x] Lot 1 — Animation de descente réalisée et testée.
-- [ ] Lot 1 — Sensation de descente validée par Fabien.
+- [x] Lot 1 — Sensation de descente validée par Fabien.
 - [x] Lot 1 — Rupture initiale réalisée et testée.
-- [ ] Lot 1 — Prise de contrôle et rythme de l’appel validés par Fabien.
+- [x] Lot 1 — Prise de contrôle et rythme de l’appel validés par Fabien.
 - [x] Parcours provisoire — Raccord médical et quatre situations jouables, avec reprise.
 - [ ] Lot 2 — Référentiel tribal validé.
-- [ ] Lot 3 — Questions et matrice validées.
+- [x] Lot 3 — Seize questions et clé P/A/D/C validées et intégrées.
 - [ ] Lot 4 — Calcul testé.
 - [ ] Lot 5 — Expérience complète validée.
 - [ ] Lot 6 — Raccord et sauvegarde vérifiés.
@@ -288,5 +304,21 @@ Ces questions n’empêchent pas le prototype :
 
 Pour chaque lot, mettre à jour ce document avec le résultat observé, les décisions prises et les points encore ouverts. Fabien valide le contenu et le ressenti. Zia implémente dans le périmètre demandé ; Fabien exécute les commandes Git.
 
-Prochaine action : faire essayer la prise de contrôle et les quatre situations à Fabien, puis ajuster le rythme. Après validation et point de sauvegarde Git exécuté par Fabien, poursuivre le référentiel tribal et le contenu réel du questionnaire.
+Prochaine action de développement, lorsque Fabien demandera de reprendre : construire les glitchs graduels selon la liste prioritaire en tête de ce document, puis la révélation du groupe en résonance, les cartes de Tribus et leur choix, le choix court de l’Auspice et l’apothéose. La finition des personnages appartient à la séance 0 IRL. Aucune pondération secondaire ne doit être inventée.
+
+## Journal — questionnaire définitif du 30 octobre 2026
+
+Source de vérité : `docs/tribes/QUESTIONNAIRE_SOURCE.md`, copiée intégralement depuis le document fourni par Fabien. Les seize citations, attributions, situations, titres secondaires, note de traduction et soixante-quatre réponses sont reproduits sans réécriture ni permutation. Cette validation remplace les propositions antérieures des lots 3 et 4 concernant la création des questions et des pondérations.
+
+Données : `src/umbraQuestions.ts` contient le référentiel éditorial typé. Chaque réponse possède un identifiant numérique textuel stable et un axe interne P/A/D/C. L’interface affiche seulement le numéro et le texte. Aucun code, score, pourcentage ou résultat tribal n’est rendu.
+
+Calcul : `getUmbraAffinity(draft)` reconstruit les scores, les seize choix avec leurs axes, la séquence brute et un historique `W20|…|P…-A…-D…-C…`. Une réponse vaut exactement un point ; la somme finale vaut seize. Les réponses suffisent à tout reconstruire : aucun state de scores ni copie persistée redondante. Les positions non répondues sont représentées par un tiret dans l’historique partiel. L’exemple illustratif de la source contenant B n’est pas une clé : seuls P/A/D/C sont produits par la clé technique.
+
+Persistance : brouillon version 2, identifiants q01 à q16. La démo version 1 ne peut pas être interprétée comme un vrai résultat ; seul ce brouillon est réinitialisé. Le dossier humain et les Historiques sont conservés. La validation dédiée précède le contrôle générique des niveaux 0–5, afin d’autoriser les index Q07 à Q16 sans élargir les niveaux de fiche. Le mécanisme de sauvegarde et son format JSON global restent identiques ; aucune modification distante n’est nécessaire. Le transport connecté est vérifié par test local, sans connexion réelle ni envoi à un compte pendant cette itération.
+
+Ambiance : le contrôleur parcourt seize positions. Chaque changement de question conserve la traversée de 420 + 540 ms, même à l’intérieur d’une même ambiance. Q01–Q04 : lisière ; Q05–Q08 : voile ; Q09–Q12 : profondeur ; Q13–Q16 : résonance. Le retour remonte selon la position de la question. L’aperçu libre garde ses quatre paliers. La prise de contrôle et les réglages visuels validés ne sont pas modifiés.
+
+Arrivée : l’écran de fin existant utilise « Quelles visions du monde semblent résonner avec ton personnage ? ». Il permet de revoir les réponses et ne crée pas d’étape supplémentaire ni de sélection tribale factice. Les treize Tribus resteront accessibles lors de l’étape suivante.
+
+Vérifications : compilation et lint réussis ; 61 tests passent. Comparaison intégrale des textes avec la source, clé des 64 réponses, profils dominants, égalité 4/4/4/4, somme seize, correction sans double comptage, anciennes sauvegardes, reprise Q11/Q16, conservation du dossier et du transport connecté. Navigateur : raccord depuis les Historiques, seize situations, double clic sans saut, réponse corrigée conservée, reprise Q11 non répondue, reprise Q16 choisie, validation au clavier, fin conservée après rechargement, navigation en pause et lisibilité à 320 px sans débordement horizontal. La préférence système de mouvement réduit n’a pas été basculée pendant cet essai.
 

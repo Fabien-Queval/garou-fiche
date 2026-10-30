@@ -1,9 +1,9 @@
-import { useEffect, useReducer, useState, useSyncExternalStore } from 'react'
+import { useEffect, useMemo, useReducer, useState, useSyncExternalStore } from 'react'
 import type { CSSProperties } from 'react'
 import type { ReactNode } from 'react'
 import UmbraAtmosphere from './UmbraAtmosphere'
 import { corruptText, SCRAMBLE_DURATION } from './scramble'
-import { createUmbraJourneyReducer, INITIAL_UMBRA_JOURNEY, UMBRA_LEAVE_MS, UMBRA_ARRIVE_MS } from './umbraJourney'
+import { createUmbraJourneyReducer, INITIAL_UMBRA_JOURNEY, UMBRA_LEAVE_MS, UMBRA_ARRIVE_MS, umbraVisualDepth } from './umbraJourney'
 import { umbraPalette } from './umbraPalette'
 import './UmbraPreview.css'
 
@@ -13,7 +13,6 @@ const DEPTHS = [
     { name: 'La profondeur', word: 'Se souvenir', fragments: ['FOLLOW THE MEANING', 'La meute manque d’un membre.', 'INTENT HAS MASS'] },
     { name: 'La résonance', word: 'Répondre', fragments: ['Nous vous entendons.', 'Vos réponses ont tracé un chemin.', 'Quelque chose répond.'] },
 ]
-const journeyReducer = createUmbraJourneyReducer(DEPTHS.length)
 
 function subscribeMotion(callback: () => void) {
     const media = window.matchMedia('(prefers-reduced-motion: reduce)')
@@ -105,23 +104,27 @@ function Seals() {
 type SceneControls = { depth: number; travelling: boolean; still: boolean; hidden: boolean; navigate: (to: number) => void }
 type SceneProps = {
     initialDepth?: number
+    stepCount?: number
     mode?: 'preview' | 'intro' | 'questions' | 'complete'
     onDepthChange?: (depth: number) => void
     children?: (controls: SceneControls) => ReactNode
 }
 
-export default function UmbraScene({ initialDepth = 0, mode = 'preview', onDepthChange, children }: SceneProps) {
+export default function UmbraScene({ initialDepth = 0, stepCount = DEPTHS.length, mode = 'preview', onDepthChange, children }: SceneProps) {
+    const journeyReducer = useMemo(() => createUmbraJourneyReducer(stepCount), [stepCount])
     const [journey, dispatch] = useReducer(journeyReducer, { ...INITIAL_UMBRA_JOURNEY, depth: initialDepth })
     const [paused, setPaused] = useState(false)
     const reducedMotion = useSyncExternalStore(subscribeMotion, motionSnapshot, () => true)
     const hidden = useSyncExternalStore(subscribeVisibility, visibilitySnapshot, () => true)
     const still = paused || reducedMotion
-    const { depth, passage } = journey
+    const { depth: stepIndex, passage } = journey
+    // Chaque question traverse le voile ; quatre ambiances couvrent l'ensemble du parcours.
+    const depth = umbraVisualDepth(stepIndex, stepCount, DEPTHS.length)
     const current = DEPTHS[depth]
     const palette = umbraPalette(depth)
 
     function goToDepth(to: number) {
-        if (passage || to === depth || !Number.isInteger(to) || to < 0 || to >= DEPTHS.length) return
+        if (passage || to === stepIndex || !Number.isInteger(to) || to < 0 || to >= stepCount) return
         if (still) onDepthChange?.(to)
         dispatch({ type: 'navigate', to, animate: !still })
     }
@@ -166,7 +169,7 @@ export default function UmbraScene({ initialDepth = 0, mode = 'preview', onDepth
             if (event.animationName === 'umbra-world-in') dispatch({ type: 'arrive' })
         }}><div className="umbra-haze haze-one" /><div className="umbra-haze haze-two" /><div className="umbra-horizon" /><Seals /><UmbraAtmosphere depth={depth} still={still} /><div className="umbra-vignette" /></div>
         <div className="umbra-veil" aria-hidden="true"><div className="umbra-veil-curtain" /><div className="umbra-veil-ring" /><div className="umbra-veil-ring" /><div className="umbra-veil-ring" /><div className="umbra-veil-grain" /></div>
-        <header className="umbra-header"><a href="/" className="umbra-brand"><span aria-hidden="true">☾</span><span>It’s a King of Magic<small>Une traversée du voile</small></span></a><span className="umbra-preview-label"><i /> {mode === 'preview' ? 'Aperçu d’ambiance' : 'Parcours d’essai'}</span></header>
+        <header className="umbra-header"><a href="/" className="umbra-brand"><span aria-hidden="true">☾</span><span>It’s a King of Magic<small>Une traversée du voile</small></span></a><span className="umbra-preview-label"><i /> {mode === 'preview' ? 'Aperçu d’ambiance' : 'La traversée'}</span></header>
         <nav className="umbra-depths" aria-label="Paliers de la traversée"><ol>{DEPTHS.map((step, index) => <li key={step.name}>{mode === 'preview' ? <button type="button" aria-current={index === depth ? 'step' : undefined} aria-disabled={passage !== null} onClick={() => goToDepth(index)} aria-label={`Palier ${index + 1} : ${step.name}`}><span className="umbra-depth-number">0{index + 1}</span><span className="umbra-depth-name">{step.name}</span><span className="umbra-depth-dot" /></button> : <span className="umbra-depth-step" aria-current={index === depth ? 'step' : undefined}><span className="umbra-depth-number">0{index + 1}</span><span className="umbra-depth-name">{step.name}</span><span className="umbra-depth-dot" /></span>}</li>)}</ol></nav>
         <div className="umbra-copy">
             <Moon />

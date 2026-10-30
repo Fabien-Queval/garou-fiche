@@ -1,6 +1,10 @@
 export const UMBRA_LEAVE_MS = 420
 export const UMBRA_ARRIVE_MS = 540
 
+export function umbraVisualDepth(stepIndex: number, stepCount: number, depthCount = 4): number {
+    return Math.min(depthCount - 1, Math.max(0, Math.floor(stepIndex * depthCount / stepCount)))
+}
+
 export type UmbraJourney = {
     depth: number
     passage: {

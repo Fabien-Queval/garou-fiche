@@ -13,11 +13,17 @@
 .umbra-question-panel { animation: umbra-question-emerge 600ms ease-out both; }
 .umbra-question-panel h1 { font-size: clamp(33px, 3.3vw, 46px); letter-spacing: -0.04em; }
 .umbra-question-panel h1:focus, .umbra-appeal h1:focus { outline: none; }
+.umbra-attribution { margin: 13px auto 24px; color: #9fb3bf; font-size: 12px; line-height: 1.7; max-width: 580px; }
+.umbra-quote-note { margin: -12px auto 24px; color: #9fb3bf; font-size: 11px; font-style: italic; }
+.umbra-situation-title { margin: 25px 0 0; color: #d7e4e8; font-family: Georgia, serif; font-size: 22px; font-weight: 400; }
+.umbra-question-description p { margin: 0 0 9px; }
 .umbra-situation-label { margin: 0 0 15px; color: #a6bcc7; font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; }
 .umbra-question-description { margin: 19px auto 26px; max-width: 500px; color: #b1c3cd; font-size: 14px; line-height: 1.85; }
-.umbra-choices { display: grid; gap: 10px; max-width: 520px; margin: 0 auto; padding: 0; border: 0; }
+.umbra-choices { display: grid; gap: 12px; max-width: 640px; margin: 0 auto; padding: 0; border: 0; }
 .umbra-choice { position: relative; display: flex; align-items: center; gap: 17px; min-height: 62px; margin: 0; padding: 14px 20px; border: 1px solid rgb(var(--umbra-edge) / 0.2); background: rgb(var(--umbra-ground) / 0.55); color: #c4d7de; text-align: left; font-size: 13px; cursor: pointer; transition: border-color 180ms, background 180ms; }
 .umbra-choice:hover { border-color: rgb(var(--umbra-edge) / 0.55); }
+.umbra-choice { line-height: 1.85; }
+.umbra-choice-letter, .umbra-choice-mark { flex-shrink: 0; }
 .umbra-choice:has(input:checked) { border-color: rgb(var(--umbra-edge) / 0.75); background: rgb(var(--umbra-glow) / 0.12); }
 .umbra-choice:has(input:focus-visible) { outline: 2px solid #c1ecfb; outline-offset: 3px; }
 .umbra-choice-letter { color: rgb(var(--umbra-filament)); font-family: Georgia, serif; font-size: 19px; }
@@ -39,7 +45,7 @@
   .umbra-appeal h1 { font-size: 39px; }
   .umbra-question-panel h1 { font-size: 34px; }
   .umbra-question-description { font-size: 13px; margin-bottom: 23px; }
-  .umbra-choice { padding: 14px; gap: 13px; font-size: 12px; }
+  .umbra-choice { padding: 14px; gap: 13px; font-size: 13px; }
   .umbra-completion h1 em { display: inline; }
   .umbra-preview:not([data-mode='preview']) .umbra-whisper { bottom: 117px; }
 }

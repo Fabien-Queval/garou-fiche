@@ -19,10 +19,11 @@ function compatible(value: unknown, example: unknown): boolean {
 export function readAnswer<T>(storage: StoragePort, key: string, field: string, fallback: T): T {
     try {
         const value = JSON.parse(storage.getItem(key) ?? '{}')[field]
+        // Ce brouillon versionné valide lui-même ses 16 questions, au-delà des niveaux 0–5.
+        if (field === 'umbraDraft') return validUmbraDraft(value) ? value as T : fallback
         if (!compatible(value, fallback)) return fallback
         if (['abilityIndex', 'evaluationIndex'].includes(field) && value > 2) return fallback
         if (field === 'phase' && !['job', 'scramble', 'concept', 'attributes', 'evaluation', 'abilities', 'abilityEvaluation', 'backgrounds', 'umbra'].includes(value)) return fallback
-        if (field === 'umbraDraft' && !validUmbraDraft(value)) return fallback
         if (field === 'backgroundDraft') {
             const draft = value as BackgroundDraft
             if (allocatedBackgroundPoints(draft.values) > 5) return fallback

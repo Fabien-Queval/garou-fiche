@@ -1,9 +1,26 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { createUmbraJourneyReducer, INITIAL_UMBRA_JOURNEY } from '../src/umbraJourney.ts'
+import { createUmbraJourneyReducer, INITIAL_UMBRA_JOURNEY, umbraVisualDepth } from '../src/umbraJourney.ts'
 
 const reduce = createUmbraJourneyReducer(4)
 const navigate = (to, animate = true) => ({ type: 'navigate', to, animate })
+
+test('seize réponses traversent le voile et se répartissent sur les quatre ambiances', () => {
+    const reduceQuestions = createUmbraJourneyReducer(16)
+    let state = INITIAL_UMBRA_JOURNEY
+    for (let index = 0; index < 16; index++) {
+        assert.equal(umbraVisualDepth(index, 16), Math.floor(index / 4))
+        if (index > 0) {
+            state = reduceQuestions(state, navigate(index))
+            assert.equal(state.passage.phase, 'leaving')
+            state = reduceQuestions(state, { type: 'cross' })
+            state = reduceQuestions(state, { type: 'arrive' })
+        }
+        assert.deepEqual(state, { depth: index, passage: null })
+    }
+    assert.equal(reduceQuestions(state, navigate(10)).passage.direction, 'up')
+    assert.deepEqual([0, 1, 2, 3].map(index => umbraVisualDepth(index, 4)), [0, 1, 2, 3])
+})
 
 test('la descente traverse le voile avant de stabiliser le palier suivant', () => {
     const departure = reduce(INITIAL_UMBRA_JOURNEY, navigate(1))
