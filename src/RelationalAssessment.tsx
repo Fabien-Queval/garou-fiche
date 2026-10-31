@@ -64,7 +64,7 @@ export default function RelationalAssessment({ budget, position, values, setValu
                             <div className="rating-levels">
                                 {LEVEL_LABELS.map((label, index) => {
                                     const level = index + 1
-                                    const exceedsBudget = consumed + level - values[id] > budget
+                                    const exceedsBudget = level > values[id] && consumed + level - values[id] > budget
                                     return (
                                         <label className="level-control" key={level}>
                                             <input
@@ -95,7 +95,9 @@ export default function RelationalAssessment({ budget, position, values, setValu
                 <p className="assessment-help">
                     {confirmed
                         ? 'Ce volet est validé. Vous pouvez ajuster vos réponses si nécessaire.'
-                        : remaining > 0
+                        : remaining < 0
+                            ? `Réduisez encore ${-remaining} ${remaining === -1 ? 'point' : 'points'} pour respecter le nouveau classement.`
+                            : remaining > 0
                             ? `Répartissez encore ${remaining} ${remaining === 1 ? 'point' : 'points'} pour continuer.`
                             : 'Tous les points ont été répartis. Vous pouvez continuer.'}
                     {' '}Les niveaux grisés dépassent les points disponibles.

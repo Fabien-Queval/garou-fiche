@@ -69,7 +69,7 @@ function AbilityCard({ definition, value, detail, remaining, onChoose, onDetail 
                             name={definition.id}
                             aria-label={level === 0 ? 'Niveau 0 — Aucune expérience particulière' : `Niveau ${level}`}
                             checked={value === level}
-                            disabled={level - value > remaining}
+                            disabled={level > value && level - value > remaining}
                             onChange={() => onChoose(definition.id, level)}
                             aria-describedby={`${definition.id}-level-description`}
                         />
@@ -173,7 +173,9 @@ export default function AbilityAssessment({ title, introduction, definitions, bu
                     ))}
                 </div>
                 <p className="assessment-help">
-                    {remaining > 0
+                    {remaining < 0
+                        ? `Réduisez encore ${-remaining} ${remaining === -1 ? 'point' : 'points'} pour respecter le nouveau classement.`
+                        : remaining > 0
                         ? `Répartissez encore ${remaining} ${remaining === 1 ? 'point' : 'points'} pour continuer.`
                         : complete ? 'Tous les points ont été répartis.' : 'Complétez les précisions obligatoires des domaines sélectionnés pour continuer.'}
                     {' '}Les niveaux grisés dépassent le budget disponible. Vous pouvez réduire une valeur pour réattribuer les points.

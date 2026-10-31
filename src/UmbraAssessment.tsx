@@ -34,7 +34,7 @@ function Appeal({ still, hidden, onComplete }: { still: boolean; hidden: boolean
     </div>
 }
 
-type Props = { draft: UmbraDraft; setDraft: Dispatch<SetStateAction<UmbraDraft>>; backgroundValues: BackgroundValues; onBack: () => void; onRestart?: () => void }
+type Props = { draft: UmbraDraft; setDraft: Dispatch<SetStateAction<UmbraDraft>>; backgroundValues: BackgroundValues; onBack: () => void; onRestart?: () => void; onFinale?: () => void; finaleReturn?: boolean; showIntro?: boolean; onIntroComplete?: () => void }
 type PanelProps = Props & { travelling: boolean; navigate: (to: number) => void }
 
 function QuestionPanel({ draft, setDraft, backgroundValues, travelling, navigate, onBack, onRestart }: PanelProps) {
@@ -79,7 +79,7 @@ function QuestionPanel({ draft, setDraft, backgroundValues, travelling, navigate
     </form>
 }
 
-export default function UmbraAssessment({ draft, setDraft, backgroundValues, onBack, onRestart }: Props) {
+export default function UmbraAssessment({ draft, setDraft, backgroundValues, onBack, onRestart, onFinale, finaleReturn, showIntro, onIntroComplete }: Props) {
     const [storageError, setStorageError] = useState(false)
     useEffect(() => {
         const failed = () => setStorageError(true)
@@ -87,10 +87,11 @@ export default function UmbraAssessment({ draft, setDraft, backgroundValues, onB
         return () => window.removeEventListener('questionnaire-storage-error', failed)
     }, [])
     const visit = useCallback((index: number) => setDraft(current => visitUmbraQuestion(current, index)), [setDraft])
-    const finishIntro = useCallback(() => setDraft(current => ({ ...current, introSeen: true })), [setDraft])
-    const mode = !draft.introSeen ? 'intro' : draft.completed ? 'complete' : 'questions'
-    if (draft.completed && draft.tribalStage === 'chosen' && draft.tribeChoice && draft.auspiceStage) return <AuspiceScene draft={draft} setDraft={setDraft} storageError={storageError} />
+    const finishIntro = useCallback(() => { setDraft(current => ({ ...current, introSeen: true })); onIntroComplete?.() }, [setDraft, onIntroComplete])
+    const intro = showIntro || !draft.introSeen
+    const mode = intro ? 'intro' : draft.completed ? 'complete' : 'questions'
+    if (draft.completed && draft.tribalStage === 'chosen' && draft.tribeChoice && draft.auspiceStage) return <AuspiceScene draft={draft} setDraft={setDraft} storageError={storageError} onComplete={onFinale} finaleReturn={finaleReturn} />
     return <UmbraScene initialDepth={draft.questionIndex} stepCount={UMBRA_QUESTIONS.length} mode={mode} onDepthChange={visit}>
-        {controls => <>{!draft.introSeen ? <Appeal still={controls.still} hidden={controls.hidden} onComplete={finishIntro} /> : <QuestionPanel draft={draft} setDraft={setDraft} backgroundValues={backgroundValues} onBack={onBack} onRestart={onRestart} travelling={controls.travelling} navigate={controls.navigate} />}{storageError && <p className="umbra-save-error" role="alert">La sauvegarde sur cet appareil est indisponible. Gardez cet onglet ouvert pour conserver vos réponses.</p>}</>}
+        {controls => <>{intro ? <Appeal still={controls.still} hidden={controls.hidden} onComplete={finishIntro} /> : <QuestionPanel draft={draft} setDraft={setDraft} backgroundValues={backgroundValues} onBack={onBack} onRestart={onRestart} travelling={controls.travelling} navigate={controls.navigate} />}{storageError && <p className="umbra-save-error" role="alert">La sauvegarde sur cet appareil est indisponible. Gardez cet onglet ouvert pour conserver vos réponses.</p>}</>}
     </UmbraScene>
 }

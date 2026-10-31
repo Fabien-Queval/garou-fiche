@@ -1,4 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
+import useFadingSetter from './useFadingSetter'
+import { fadeScene } from './sceneTransition'
+import './SceneTransition.css'
 import AttributeRanking from './AttributeRanking'
 import AbilityRanking from './AbilityRanking'
 import AbilityAssessment from './AbilityAssessment'
@@ -6,8 +9,19 @@ import BackgroundAssessment from './BackgroundAssessment'
 import { canCompleteBackgrounds, createBackgroundDraft } from './backgrounds'
 import UmbraAssessment from './UmbraAssessment'
 import UmbraTakeover from './UmbraTakeover'
-import { createUmbraDraft } from './umbraQuestionnaire'
-import { useQuestionnaireState } from './questionnaireStorage'
+import { createUmbraDraft, completeUmbra, visitUmbraQuestion } from './umbraQuestionnaire'
+import type { UmbraDraft } from './umbraQuestionnaire'
+import { browseAuspice } from './auspices'
+import Apotheosis from './Apotheosis'
+import MedicalDossier from './MedicalDossier'
+import PrivacyLink from './PrivacyLink'
+import { createFinaleDraft, canBeginFinale, beginFinale, nextFinaleStage } from './finaleModel'
+import type { FinaleStage } from './finaleModel'
+import type { DossierData, DossierSection } from './dossierModel'
+import { useQuestionnaireState, QuestionnaireStorageContext, QuestionnaireStoragePortContext } from './questionnaireStorage'
+import { canReplayExperience, createReplayStorage } from './experienceReplay'
+import type { ReplayPoint } from './experienceReplay'
+import './ExperienceReplay.css'
 import type { TotemRepository } from './totemRepository'
 import { abilityBudget } from './abilities'
 import type { AbilityBlock } from './abilities'
@@ -29,7 +43,20 @@ import {
     distortionAt,
 } from './scramble'
 
-type Phase = 'job' | 'scramble' | 'concept' | 'attributes' | 'evaluation' | 'abilities' | 'abilityEvaluation' | 'backgrounds' | 'umbra'
+type Phase = 'job' | 'scramble' | 'concept' | 'attributes' | 'evaluation' | 'abilities' | 'abilityEvaluation' | 'backgrounds' | 'umbra' | 'finale' | 'dossier'
+
+const changed = <T,>(before: T, after: T) => before !== after
+const neverFade = () => false
+const takeoverEnded = (before: boolean, after: boolean) => before && !after
+const nightPassage = (before: Phase, after: Phase) => [before, after].some(phase => phase === 'umbra' || phase === 'finale')
+function umbraScene(draft: UmbraDraft) {
+    if (!draft.introSeen) return 'intro'
+    if (!draft.completed) return 'questions'
+    if (draft.tribalStage === 'chosen' && draft.tribeChoice && draft.auspiceStage) return `lunar-${draft.auspiceStage}`
+    return draft.tribalStage ?? (draft.tribeChoice ? 'chosen' : 'reveal')
+}
+const umbraSceneChanged = (before: UmbraDraft, after: UmbraDraft) => umbraScene(before) !== umbraScene(after)
+const finaleNeedsFade = (before: { stage: FinaleStage }, after: { stage: FinaleStage }) => before.stage !== after.stage && ['diagnostic', 'dossier'].includes(after.stage)
 
 const attributePreview = import.meta.env.DEV &&
     new URLSearchParams(window.location.search).get('screen') === 'attributes'
@@ -50,18 +77,18 @@ const knowledgesPreview = import.meta.env.DEV &&
 const backgroundsPreview = import.meta.env.DEV &&
     ['backgrounds', 'passage'].includes(new URLSearchParams(window.location.search).get('screen') ?? '')
 
-function App({ totemRepository }: { totemRepository?: TotemRepository }) {
+function App({ totemRepository, replay }: { totemRepository?: TotemRepository; replay?: { point: ReplayPoint; onExit: () => void } }) {
     const [playerName, setPlayerName] = useQuestionnaireState('playerName', '')
-    const [started, setStarted] = useQuestionnaireState('started', attributePreview || functionalPreview || relationalPreview || cognitivePreview || abilityPreview || talentsPreview || skillsPreview || knowledgesPreview || backgroundsPreview)
+    const [started, saveStarted] = useQuestionnaireState('started', attributePreview || functionalPreview || relationalPreview || cognitivePreview || abilityPreview || talentsPreview || skillsPreview || knowledgesPreview || backgroundsPreview)
     const [profession, setProfession] = useQuestionnaireState('profession', '')
     const [concept, setConcept] = useQuestionnaireState('concept', '')
 
-    const [phase, setPhase] = useQuestionnaireState<Phase>('phase', backgroundsPreview ? 'backgrounds' : talentsPreview || skillsPreview || knowledgesPreview ? 'abilityEvaluation' : abilityPreview ? 'abilities' : functionalPreview || relationalPreview || cognitivePreview ? 'evaluation' : attributePreview ? 'attributes' : 'job')
+    const [phase, savePhase] = useQuestionnaireState<Phase>('phase', backgroundsPreview ? 'backgrounds' : talentsPreview || skillsPreview || knowledgesPreview ? 'abilityEvaluation' : abilityPreview ? 'abilities' : functionalPreview || relationalPreview || cognitivePreview ? 'evaluation' : attributePreview ? 'attributes' : 'job')
     const [elapsed, setElapsed] = useState(0)
     // L'ordre vit dans le parent pour rester disponible après le classement.
     const [attributeOrder, setAttributeOrder] = useQuestionnaireState<AttributeBlock[]>('attributeOrder', ['physical', 'social', 'mental'])
     const [abilityOrder, setAbilityOrder] = useQuestionnaireState<AbilityBlock[]>('abilityOrder', ['talents', 'skills', 'knowledges'])
-    const [abilityIndex, setAbilityIndex] = useQuestionnaireState('abilityIndex', knowledgesPreview ? 2 : skillsPreview ? 1 : 0)
+    const [abilityIndex, saveAbilityIndex] = useQuestionnaireState('abilityIndex', knowledgesPreview ? 2 : skillsPreview ? 1 : 0)
     const [talentValues, setTalentValues] = useQuestionnaireState('talentValues', createAbilityValues(TALENTS))
     const [talentDetails, setTalentDetails] = useQuestionnaireState<AbilityDetails>('talentDetails', {})
     const [skillValues, setSkillValues] = useQuestionnaireState('skillValues', createAbilityValues(SKILLS))
@@ -69,13 +96,28 @@ function App({ totemRepository }: { totemRepository?: TotemRepository }) {
     const [knowledgeValues, setKnowledgeValues] = useQuestionnaireState('knowledgeValues', createAbilityValues(KNOWLEDGES))
     const [knowledgeDetails, setKnowledgeDetails] = useQuestionnaireState<AbilityDetails>('knowledgeDetails', {})
     const [backgroundDraft, setBackgroundDraft] = useQuestionnaireState('backgroundDraft', createBackgroundDraft())
-    const [umbraDraft, setUmbraDraft] = useQuestionnaireState('umbraDraft', createUmbraDraft())
-    const [takingOver, setTakingOver] = useState(false)
-    const finishTakingOver = useCallback(() => setTakingOver(false), [])
-    const [evaluationIndex, setEvaluationIndex] = useQuestionnaireState('evaluationIndex', cognitivePreview ? 2 : relationalPreview ? 1 : 0)
+    const [umbraDraft, saveUmbraDraft] = useQuestionnaireState('umbraDraft', createUmbraDraft())
+    const [takingOver, saveTakingOver] = useState(replay?.point === 'answers')
+    const setTakingOver = useFadingSetter(takingOver, saveTakingOver, takeoverEnded, true)
+    const finishTakingOver = useCallback(() => setTakingOver(false), [setTakingOver])
+    const [evaluationIndex, saveEvaluationIndex] = useQuestionnaireState('evaluationIndex', cognitivePreview ? 2 : relationalPreview ? 1 : 0)
     const [physicalValues, setPhysicalValues] = useQuestionnaireState<PhysicalValues>('physicalValues', { strength: 1, dexterity: 1, stamina: 1 })
     const [socialValues, setSocialValues] = useQuestionnaireState<SocialValues>('socialValues', { charisma: 1, manipulation: 1, appearance: 1 })
     const [mentalValues, setMentalValues] = useQuestionnaireState<MentalValues>('mentalValues', { perception: 1, intelligence: 1, wits: 1 })
+    const [finaleDraft, saveFinaleDraft] = useQuestionnaireState('finaleDraft', createFinaleDraft())
+    const [replayPoint, saveReplayPoint] = useState<ReplayPoint | null>(null)
+    const [replayIntro, setReplayIntro] = useState(Boolean(replay && !['tribe', 'auspice', 'finale'].includes(replay.point)))
+    const finishReplayIntro = useCallback(() => { if (replayIntro) fadeScene(() => setReplayIntro(false), { night: true }) }, [replayIntro])
+    const postFinale = finaleDraft.stage === 'dossier'
+    const phaseNeedsFade = useCallback((before: Phase, after: Phase) => before !== after && after !== 'scramble' && !(before === 'scramble' && after === 'concept') && !(after === 'umbra' && (!umbraDraft.introSeen || replayIntro) && !postFinale), [umbraDraft.introSeen, postFinale, replayIntro])
+    const setPhase = useFadingSetter(phase, savePhase, phaseNeedsFade, nightPassage)
+    const setStarted = useFadingSetter(started, saveStarted, changed)
+    const setEvaluationIndex = useFadingSetter(evaluationIndex, saveEvaluationIndex, phase === 'evaluation' ? changed : neverFade)
+    const setAbilityIndex = useFadingSetter(abilityIndex, saveAbilityIndex, phase === 'abilityEvaluation' ? changed : neverFade)
+    const setUmbraDraft = useFadingSetter(umbraDraft, saveUmbraDraft, phase === 'umbra' ? umbraSceneChanged : neverFade, true)
+    const setFinaleDraft = useFadingSetter(finaleDraft, saveFinaleDraft, finaleNeedsFade, true)
+    const setReplayPoint = useFadingSetter(replayPoint, saveReplayPoint, changed, true)
+    const dossierData: DossierData = { playerName, profession, concept, attributeOrder, physicalValues, socialValues, mentalValues, abilityOrder, talentValues, talentDetails, skillValues, skillDetails, knowledgeValues, knowledgeDetails, backgroundDraft, umbraDraft }
 
     useEffect(() => {
         if (phase !== 'scramble') return
@@ -160,66 +202,106 @@ function App({ totemRepository }: { totemRepository?: TotemRepository }) {
     }
 
     function startAssessments() {
+        if (postFinale) { returnToDossier(); return }
         if (physicalNeedsReset) setPhysicalValues({ strength: 1, dexterity: 1, stamina: 1 })
         if (socialNeedsReset) setSocialValues({ charisma: 1, manipulation: 1, appearance: 1 })
         if (mentalNeedsReset) setMentalValues({ perception: 1, intelligence: 1, wits: 1 })
         setEvaluationIndex(0)
         setPhase('evaluation')
-        window.scrollTo(0, 0)
     }
 
     function nextAssessment() {
+        if (postFinale) { returnToDossier(); return }
         if (evaluationIndex < attributeOrder.length - 1) {
             setEvaluationIndex(index => index + 1)
         } else {
             setPhase('abilities')
         }
-        window.scrollTo(0, 0)
     }
 
     function returnToRanking() {
         setPhase('attributes')
-        window.scrollTo(0, 0)
     }
 
     function startAbilities() {
+        if (postFinale) { returnToDossier(); return }
         if (talentsNeedsReset) setTalentValues(createAbilityValues(TALENTS))
         if (skillsNeedsReset) setSkillValues(createAbilityValues(SKILLS))
         if (knowledgesNeedsReset) setKnowledgeValues(createAbilityValues(KNOWLEDGES))
         setAbilityIndex(0)
         setPhase('abilityEvaluation')
-        window.scrollTo(0, 0)
     }
 
     function nextAbility() {
+        if (postFinale) { returnToDossier(); return }
         if (abilityIndex < abilityOrder.length - 1) {
             setAbilityIndex(index => index + 1)
         } else {
             setPhase('backgrounds')
         }
-        window.scrollTo(0, 0)
     }
 
     function returnToAbilityRanking() {
         setPhase('abilities')
-        window.scrollTo(0, 0)
     }
 
     function startUmbra() {
+        if (postFinale) { returnToDossier(); return }
         if (!canCompleteBackgrounds(backgroundDraft)) return
-        setTakingOver(!umbraDraft.introSeen)
+        setTakingOver(!umbraDraft.introSeen || replayIntro)
         setPhase('umbra')
-        window.scrollTo(0, 0)
     }
 
     function returnFromUmbra() {
-        setPhase('backgrounds')
-        window.scrollTo(0, 0)
-        requestAnimationFrame(() => document.getElementById('background-title')?.focus({ preventScroll: true }))
+        if (postFinale) { returnToDossier(); return }
+        fadeScene(() => {
+            setPhase('backgrounds')
+            requestAnimationFrame(() => document.getElementById('background-title')?.focus({ preventScroll: true }))
+        }, { night: true })
     }
 
-    if (phase === 'umbra' && !takingOver && canCompleteBackgrounds(backgroundDraft)) {
-        return <UmbraAssessment draft={umbraDraft} setDraft={setUmbraDraft} backgroundValues={backgroundDraft.values} onBack={returnFromUmbra} onRestart={import.meta.env.DEV ? () => { setUmbraDraft(createUmbraDraft()); returnFromUmbra() } : undefined} />
+    function returnToDossier() { setPhase('dossier') }
+    function editDossier(section: DossierSection) {
+        if (section === 'attributeOrder') setPhase('attributes')
+        else if (['physical', 'social', 'mental'].includes(section)) { setEvaluationIndex(Math.max(0, attributeOrder.indexOf(section as AttributeBlock))); setPhase('evaluation') }
+        else if (section === 'abilityOrder') setPhase('abilities')
+        else if (['talents', 'skills', 'knowledges'].includes(section)) { setAbilityIndex(Math.max(0, abilityOrder.indexOf(section as AbilityBlock))); setPhase('abilityEvaluation') }
+        else if (section === 'backgrounds') setPhase('backgrounds')
+        else if (['tribe', 'auspice', 'answers'].includes(section)) {
+            setUmbraDraft(current => {
+                if (section === 'answers') return visitUmbraQuestion(current, 0)
+                const completed = completeUmbra({ ...current, questionIndex: 15 })
+                if (!completed.completed) return current
+                if (section === 'tribe') return { ...completed, tribalStage: 'explore', auspiceStage: undefined }
+                return browseAuspice({ ...completed, tribalStage: 'chosen' }, completed.auspiceChoice?.auspiceId ?? 'ragabash')
+            })
+            setPhase('umbra')
+        }
+    }
+    const finishFinale = useCallback(() => {
+        if (replay) { replay.onExit(); return }
+        setFinaleDraft(current => ({ ...current, stage: 'dossier' })); setPhase('dossier')
+    }, [replay, setFinaleDraft, setPhase])
+    const advanceFinale = useCallback(() => {
+        if (finaleDraft.stage === 'rupture') finishFinale()
+        else setFinaleDraft(nextFinaleStage)
+    }, [finaleDraft.stage, finishFinale, setFinaleDraft])
+    const closingSeen = useCallback(() => setFinaleDraft(current => current.closingSeen ? current : { ...current, closingSeen: true }), [setFinaleDraft])
+    function startFinale() {
+        if (postFinale) { returnToDossier(); return }
+        if (!canBeginFinale(umbraDraft)) return
+        setFinaleDraft(current => beginFinale(current, umbraDraft))
+        setPhase('finale')
+    }
+    if (replayPoint) return <ReplayExperience data={dossierData} point={replayPoint} onExit={() => setReplayPoint(null)} />
+    if (phase === 'dossier' || phase === 'finale' && postFinale) return <MedicalDossier data={dossierData} finale={finaleDraft} onEdit={editDossier} onReplay={point => { if (canReplayExperience(dossierData, point)) setReplayPoint(point) }} onIdentity={patch => {
+        if (patch.playerName !== undefined) setPlayerName(patch.playerName)
+        if (patch.profession !== undefined) setProfession(patch.profession)
+        if (patch.concept !== undefined) setConcept(patch.concept)
+    }} onConfirm={fingerprint => setFinaleDraft(current => ({ ...current, stage: 'dossier', confirmedFingerprint: fingerprint, closingSeen: false }))} onClosingSeen={closingSeen} />
+    if (phase === 'finale' && finaleDraft.stage !== 'ready' && finaleDraft.stage !== 'dossier' && canBeginFinale(umbraDraft)) return <Apotheosis key={finaleDraft.stage} stage={finaleDraft.stage} auspice={umbraDraft.auspiceChoice!.auspiceId} onNext={advanceFinale} onFinish={finishFinale} />
+    if ((phase === 'umbra' || phase === 'finale') && !takingOver && canCompleteBackgrounds(backgroundDraft)) {
+        return <><UmbraAssessment draft={umbraDraft} setDraft={setUmbraDraft} backgroundValues={backgroundDraft.values} onBack={returnFromUmbra} onFinale={startFinale} finaleReturn={postFinale} showIntro={replayIntro} onIntroComplete={finishReplayIntro} onRestart={import.meta.env.DEV && !postFinale && !replay ? () => { setUmbraDraft(createUmbraDraft()); returnFromUmbra() } : undefined} />{postFinale && <button type="button" className="dossier-return" onClick={returnToDossier}>Retour à la synthèse du dossier</button>}</>
     }
 
     return (
@@ -232,6 +314,7 @@ function App({ totemRepository }: { totemRepository?: TotemRepository }) {
                 <div className="signal-echo signal-echo--second">{JOB_QUESTION}</div>
             </div>
             <main aria-busy={phase === 'scramble'} inert={takingOver}>
+                {postFinale && <button className="dossier-editor-return" type="button" onClick={returnToDossier}>← Retour à la synthèse du dossier</button>}
                 <header>
                     <p className="eyebrow">{visualText('Service de santé au travail')}</p>
                     <h1 aria-label={headerTitle}>
@@ -243,7 +326,7 @@ function App({ totemRepository }: { totemRepository?: TotemRepository }) {
 
                 {started ? (
                     phase === 'backgrounds' || phase === 'umbra' ? (
-                        <BackgroundAssessment draft={backgroundDraft} setDraft={setBackgroundDraft} totemRepository={totemRepository} onContinue={startUmbra} onBack={() => { setAbilityIndex(2); setPhase('abilityEvaluation'); window.scrollTo(0, 0) }} />
+                        <BackgroundAssessment draft={backgroundDraft} setDraft={setBackgroundDraft} totemRepository={totemRepository} onContinue={startUmbra} onBack={() => { setAbilityIndex(2); setPhase('abilityEvaluation') }} />
                     ) : phase === 'abilities' ? (
                         <AbilityRanking abilityOrder={abilityOrder} setAbilityOrder={setAbilityOrder} talentsNeedsReset={talentsNeedsReset} skillsNeedsReset={skillsNeedsReset} knowledgesNeedsReset={knowledgesNeedsReset} onContinue={startAbilities} />
                     ) : phase === 'abilityEvaluation' ? (
@@ -390,7 +473,6 @@ function App({ totemRepository }: { totemRepository?: TotemRepository }) {
                                         if (!concept.trim()) return
                                         setConcept(concept.trim())
                                         setPhase('attributes')
-                                        window.scrollTo(0, 0)
                                     }}
                                 >
                                     <label htmlFor="concept">Votre présentation</label>
@@ -440,6 +522,7 @@ function App({ totemRepository }: { totemRepository?: TotemRepository }) {
 
                 <footer>
                     {visualText('Création de personnage — Répondez pour votre personnage fictif.', 0.4)}
+                    <br /><PrivacyLink />
                 </footer>
             </main>
             {takingOver && <UmbraTakeover onComplete={finishTakingOver} />}
@@ -451,6 +534,16 @@ function App({ totemRepository }: { totemRepository?: TotemRepository }) {
             )}
         </div>
     )
+}
+
+function ReplayExperience({ data, point, onExit }: { data: DossierData; point: ReplayPoint; onExit: () => void }) {
+    const [storage] = useState(() => createReplayStorage(data, point))
+    return <QuestionnaireStoragePortContext.Provider value={storage}><QuestionnaireStorageContext.Provider value="experience-replay">
+        <div className="experience-replay">
+            <nav className="experience-replay-banner" aria-label="Relecture de l’expérience"><p>Relecture de l’expérience<span>Votre dossier enregistré reste conservé.</span></p><button type="button" onClick={onExit}>Revenir à mon dossier <span aria-hidden="true">↗</span></button></nav>
+            <App replay={{ point, onExit }} />
+        </div>
+    </QuestionnaireStorageContext.Provider></QuestionnaireStoragePortContext.Provider>
 }
 
 export default App

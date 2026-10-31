@@ -5,6 +5,7 @@ import { AUSPICES, browseAuspice, confirmAuspiceChoice, getAuspice, leaveAuspice
 import type { AuspiceId } from './auspices'
 import { LUNAR_PASSAGE_MS, lunarJourneyReducer, nextAuspice } from './lunarJourney'
 import LunarMoon from './LunarMoon'
+import { fadeScene } from './sceneTransition'
 import landscape from './assets/lunar-plain.webp'
 import './AuspiceScene.css'
 
@@ -20,9 +21,9 @@ function subscribeVisibility(callback: () => void) {
 const motionSnapshot = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
 const visibilitySnapshot = () => document.hidden
 
-type Props = { draft: UmbraDraft; setDraft: Dispatch<SetStateAction<UmbraDraft>>; storageError: boolean }
+type Props = { draft: UmbraDraft; setDraft: Dispatch<SetStateAction<UmbraDraft>>; storageError: boolean; onComplete?: () => void; finaleReturn?: boolean }
 
-export default function AuspiceScene({ draft, setDraft, storageError }: Props) {
+export default function AuspiceScene({ draft, setDraft, storageError, onComplete, finaleReturn }: Props) {
     const chosen = draft.auspiceStage === 'chosen' && Boolean(draft.auspiceChoice)
     const [journey, dispatch] = useReducer(lunarJourneyReducer, { current: (chosen ? draft.auspiceChoice?.auspiceId : draft.viewedAuspice) ?? draft.auspiceChoice?.auspiceId ?? 'ragabash', passage: null })
     const [opened, setOpened] = useState(false)
@@ -107,7 +108,7 @@ export default function AuspiceScene({ draft, setDraft, storageError }: Props) {
             </div>
             {!chosen && <div className="lunar-arrows" aria-label="Faire tourner le ciel"><button type="button" disabled={Boolean(journey.passage)} onClick={() => navigate(nextAuspice(journey.current, -1), -1)} aria-label="Lune précédente">←</button><button type="button" disabled={Boolean(journey.passage)} onClick={() => navigate(nextAuspice(journey.current, 1), 1)} aria-label="Lune suivante">→</button></div>}
             <div className="lunar-hud">
-                {chosen ? <div className="lunar-chosen"><p className="lunar-eyebrow">Votre Auspice</p><h2>{profile.name} <span>· {profile.role}</span></h2><p>Votre préférence est enregistrée. Elle se prépare avec le MJ pour la séance 0.</p><button type="button" className="lunar-link" onClick={() => setDraft(current => browseAuspice(current, currentId))}>Revoir les cinq lunes</button></div> : <>
+                {chosen ? <div className="lunar-chosen"><p className="lunar-eyebrow">Votre Auspice</p><h2>{profile.name} <span>· {profile.role}</span></h2><p>Votre préférence est enregistrée. Elle se prépare avec le MJ pour la séance 0.</p>{onComplete && <button type="button" className="lunar-finish" onClick={onComplete}>{finaleReturn ? 'Retour au dossier' : 'Terminer la traversée'} <span aria-hidden="true">→</span></button>}<button type="button" className="lunar-link" onClick={() => setDraft(current => browseAuspice(current, currentId))}>Revoir les cinq lunes</button></div> : <>
                     <p className="lunar-guidance">Approchez une lune. Écoutez ce qu’elle vous propose.</p>
                     {draft.auspiceChoice && <p className="lunar-existing">Préférence conservée : {getAuspice(draft.auspiceChoice.auspiceId).name}.</p>}
                     <nav className="lunar-phases" aria-label="Les cinq phases de la Lune">{AUSPICES.map((auspice, index) => <button key={auspice.id} type="button" aria-label={`Voir ${auspice.phase} — ${auspice.name}`} aria-current={auspice.id === currentId ? 'step' : undefined} disabled={Boolean(journey.passage)} onClick={() => navigate(auspice.id, index > AUSPICES.findIndex(item => item.id === journey.current) ? 1 : -1)}><LunarMoon light={auspice.light} /><span>{auspice.phase}</span></button>)}</nav>
@@ -124,7 +125,7 @@ export default function AuspiceScene({ draft, setDraft, storageError }: Props) {
             {confirming ? <>
                 <p>Vous confirmez cet Auspice pour votre personnage. Il est indépendant des résonances et du choix de Tribu.</p>
                 <p>Votre préférence précédente, si vous en aviez une, sera remplacée. La préparation du personnage et la validation avec le MJ restent à la séance 0.</p>
-                <div className="lunar-card-actions"><button type="button" className="lunar-confirm" onClick={() => { wasOpened.current = false; closePanel(); setDraft(current => confirmAuspiceChoice(current, currentId)) }}>Confirmer mon Auspice <span aria-hidden="true">☾</span></button><button type="button" className="lunar-link" onClick={() => setConfirming(false)}>Relire la fiche</button><button type="button" className="lunar-link" onClick={closePanel}>Continuer à regarder le ciel</button></div>
+                <div className="lunar-card-actions"><button type="button" className="lunar-confirm" onClick={() => fadeScene(() => { wasOpened.current = false; closePanel(); setDraft(current => confirmAuspiceChoice(current, currentId)) }, { night: true })}>Confirmer mon Auspice <span aria-hidden="true">☾</span></button><button type="button" className="lunar-link" onClick={() => setConfirming(false)}>Relire la fiche</button><button type="button" className="lunar-link" onClick={closePanel}>Continuer à regarder le ciel</button></div>
             </> : <>
                 <p className="lunar-invocation">{profile.invocation}</p><p>{profile.description}</p>
                 <h3>Au sein de la meute</h3><p>{profile.pack}</p>

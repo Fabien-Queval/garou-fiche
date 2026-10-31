@@ -7,6 +7,7 @@ import type { AnswerBag, DossierContext } from './cloudQuestionnaire'
 import { QuestionnaireStorageContext } from './questionnaireStorage'
 import { createSupabaseTotemRepository } from './totemRepository'
 import './Authentication.css'
+import PrivacyLink from './PrivacyLink'
 
 const App = lazy(() => import('./App'))
 
@@ -58,7 +59,7 @@ function LoginScreen() {
             {!supabase && <p className="identification-error" role="status">La connexion à votre dossier sera disponible prochainement.</p>}
             <button type="submit" disabled={!supabase || !email.trim() || busy || cooldown > 0}>{busy ? 'Demande en cours…' : cooldown > 0 ? `Nouveau lien dans ${cooldown} s` : sent ? 'Renvoyer le lien' : 'Recevoir mon lien de connexion'}</button>
         </form>
-        <footer>Votre dossier est individuel. Le questionnaire porte sur votre personnage fictif.</footer>
+        <footer>Votre dossier est individuel. Le questionnaire porte sur votre personnage fictif. Ne renseignez pas de véritables informations médicales ou sensibles vous concernant.<br /><PrivacyLink /></footer>
     </main>
 }
 

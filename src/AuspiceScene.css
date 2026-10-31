@@ -61,6 +61,8 @@
 .lunar-chosen h2 span { display: block; margin-top: 3px; color: #c5d1df; font-size: 16px; }
 .lunar-chosen > p:not(.lunar-eyebrow) { margin: 0 auto; max-width: 360px; font-size: 11px; line-height: 1.8; color: #becbd9; }
 .lunar-chosen .lunar-eyebrow { margin-bottom: 8px; }
+.lunar-finish { display: flex; align-items: center; justify-content: space-between; gap: 30px; min-height: 46px; margin: 14px auto 0; padding: 10px 18px; border: 1px solid #c9c09d80; border-radius: 2px; color: #eee0bd; background: #0a1524d9; font-size: 11px; }
+.lunar-finish:hover { background: #26332ee8; }
 .lunar-link { display: block; margin: 8px auto 0; text-decoration: underline; text-underline-offset: 5px; }
 .lunar-card { position: absolute; z-index: 5; top: 115px; right: 3%; width: min(365px, 30%); max-height: calc(100svh - 185px); margin: 0; padding: 28px; overflow-y: auto; overscroll-behavior: contain; border: 1px solid #b9c6d450; border-radius: 5px; color: #c5d0db; background: #08111eef; box-shadow: 0 14px 80px #0008; backdrop-filter: blur(18px); scrollbar-color: #5f6d80 #09111d; }
 .lunar-card-close { position: sticky; z-index: 1; top: -12px; float: right; width: 44px; height: 44px; min-height: 44px; margin: -15px -15px 0 4px; padding: 0; border: 1px solid #afc4db4a; border-radius: 50%; background: #101d2f; color: #d4dfe9; font-size: 25px; }

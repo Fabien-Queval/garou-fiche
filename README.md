@@ -13,6 +13,10 @@ Le parcours adopte la présentation d'un questionnaire professionnel : expérien
 - Classement et évaluation des aptitudes, savoir-faire et connaissances.
 - Choix des ressources, relations et éléments de parcours du personnage.
 - Effets visuels ponctuels intégrés à l'ambiance de la campagne.
+- Traversée umbrale, résonances, exploration des treize Tribus et choix de l’Auspice sous les cinq lunes.
+- Apothéose narrative, puis retour au dossier médico-professionnel complet et modifiable.
+- Confirmation et préparation d’une impression pour l’entretien du 08 Novembre 2026 à 14h00 ; finition du personnage en séance 0.
+- Relecture de l’expérience depuis chaque rubrique du dossier, avec les choix préremplis dans une copie temporaire qui préserve le dossier confirmé.
 
 Les règles internes suivent **W20**. Les réponses sont conservées dans un brouillon local et, après identification, sauvegardées dans Supabase. Les dossiers sont individuels ; le total du Totem est calculé pour la meute autorisée.
 
@@ -23,6 +27,10 @@ Le questionnaire et l'écran d'identification par lien email sont implémentés.
 Avant l'ouverture aux joueurs, il reste à publier le site, configurer l'envoi des emails et les adresses de retour, créer la campagne et la meute, puis tester le parcours avec de vrais comptes.
 
 Les droits de consultation du MJ sont prévus côté base ; l'interface de consultation des dossiers reste à construire.
+
+Le déroulement du final, ses sources et les vérifications encore nécessaires sont décrits dans [la spécification de l’Apothéose](docs/tribes/APOTHEOSE_SPEC.md). L’aperçu natif d’impression et les essais avec de vrais comptes restent à vérifier avant ouverture.
+
+La page `/?page=confidentialite` est accessible sans connexion, depuis les pieds de page de l’identification, du questionnaire médical et du dossier final. Elle s’ouvre dans un autre onglet pour conserver le parcours. Le contact indiqué est **Papy Fab, sur le Discord de l’Antre de la Manticore**, par message privé. La suppression des comptes et dossiers actifs après la séance du **8 novembre 2026** est une opération manuelle annoncée par l’organisateur ; aucun effacement automatique n’a été ajouté. La notice distingue les dossiers en ligne, les copies locales, les fiches remises au MJ et les éventuelles sauvegardes techniques des prestataires.
 
 ## Lancer le projet en local
 

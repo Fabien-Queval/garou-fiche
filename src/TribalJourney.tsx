@@ -9,6 +9,7 @@ import type { BackgroundValues } from './backgrounds'
 import { getTribeProfile, tribeCreationReview, TRIBAL_GIFTS } from './tribeProfiles'
 import { confirmTribeChoice, exploreTribes, revealTribes } from './tribeSelection'
 import { enterAuspices } from './auspices'
+import { fadeScene } from './sceneTransition'
 import './TribalJourney.css'
 
 const nameOf = (id: TribeId) => UMBRA_TRIBES.find(tribe => tribe.id === id)!.name
@@ -129,6 +130,6 @@ export default function TribalJourney({ draft, setDraft, backgroundValues, onRev
             </li>
         })}</ul>
         <div className="tribe-explore-actions">{draft.tribeChoice && <button className="umbra-descend" type="button" onClick={() => setDraft(current => ({ ...current, tribalStage: 'chosen' }))}>Retrouver ma préférence <span aria-hidden="true">→</span></button>}<button className="umbra-text-button" type="button" onClick={() => setDraft(revealTribes)}>Revenir au Cercle des Treize</button><button className="umbra-text-button" type="button" onClick={onReview}>Revoir mes réponses</button><button className="umbra-text-button" type="button" onClick={onBack}>Retour au dossier</button></div>
-        {opened && <TribeDialog key={opened} id={opened} backgroundValues={backgroundValues} onClose={() => setOpened(null)} onConfirm={() => { const id = opened; setOpened(null); setDraft(current => confirmTribeChoice(current, id)) }} />}
+        {opened && <TribeDialog key={opened} id={opened} backgroundValues={backgroundValues} onClose={() => setOpened(null)} onConfirm={() => fadeScene(() => { const id = opened; setOpened(null); setDraft(current => confirmTribeChoice(current, id)) }, { night: true })} />}
     </section>
 }
