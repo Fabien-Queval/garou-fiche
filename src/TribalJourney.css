@@ -1,0 +1,66 @@
+.tribe-hrp { margin: 0 0 17px; color: #a8c3c2; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; }
+body:has(.tribe-dialog[open]) { overflow: hidden; }
+.tribal-exploration h1, .tribal-chosen h1 { font-size: clamp(38px, 4.8vw, 62px); }
+.tribal-exploration h1:focus, .tribal-chosen h1:focus, .tribe-dialog h2:focus { outline: none; }
+.tribe-gallery-intro { max-width: 600px; margin: 24px auto 35px; color: #b9cdd0; font-size: 14px; line-height: 1.85; }
+.tribe-current-choice { margin: 0 auto 28px; color: #c4ddd1; font-size: 12px; line-height: 1.8; }
+.tribe-card-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; margin: 0; padding: 0; list-style: none; text-align: left; }
+.tribe-card { display: flex; flex-direction: column; min-width: 0; padding: 24px; border: 1px solid #8bb7a938; border-radius: 3px; background: linear-gradient(145deg, #15332c6b, #06110fe8); }
+.tribe-card[data-resonance='major'] { border-color: #c4e6d778; box-shadow: inset 0 1px 26px #b2e5cd0b, 0 0 24px #89cbb111; }
+.tribe-card[data-resonance='near'] { border-color: #92c3ad5e; }
+.tribe-card-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.tribe-card-seal { display: block; flex: 0 0 54px; height: 54px; color: #c4dfd7; }
+.tribe-card-seal svg, .tribe-detail-seal svg, .tribe-chosen-seal svg { display: block; width: 100%; height: 100%; }
+.tribe-card-rank { color: #bad2c9; font-size: 10px; text-align: right; line-height: 1.6; }
+.tribe-card h2 { margin: 17px 0 7px; color: #dfeae3; font: 400 25px/1.2 Georgia, serif; }
+.tribe-card-totem { margin: 0 0 20px; color: #a9c5bc; font-size: 11px; }
+.tribe-card-manifesto { margin: 0 0 17px; color: #d0e0d4; font: italic 16px/1.7 Georgia, serif; }
+.tribe-card-philosophy { margin: 0 0 24px; color: #bcced0; font-size: 12px; line-height: 1.85; }
+.tribe-preference-mark { margin: 0 0 18px; color: #d0e8d8; font-size: 11px; }
+.tribe-discover { display: flex; align-items: center; justify-content: space-between; gap: 14px; width: 100%; min-height: 44px; margin: auto 0 0; padding: 12px 0 0; border: 0; border-top: 1px solid #8ab49d40; border-radius: 0; color: #d5e6de; background: transparent; font-size: 12px; text-align: left; }
+.tribe-discover:hover { color: #edfff5; background: transparent; }
+.tribe-explore-actions { margin-top: 30px; }
+.tribe-dialog { width: min(760px, calc(100% - 40px)); max-width: 760px; max-height: 88svh; margin: auto; padding: 0; border: 1px solid #99c7b667; border-radius: 6px; color: #c8dbd8; background: #081611; box-shadow: 0 0 90px #000b, inset 0 1px 60px #98d7b608; color-scheme: dark; text-align: left; overflow-y: auto; }
+.tribe-dialog::backdrop { background: #010805cf; backdrop-filter: blur(5px); }
+.tribe-dialog-content { position: relative; padding: 42px; }
+.tribe-dialog-close { position: sticky; top: 12px; z-index: 2; display: block; float: right; width: 44px; min-height: 44px; margin: -26px -26px 0 12px; padding: 0; border: 1px solid #9dbbab50; border-radius: 50%; color: #d6e8df; background: #10241f; font-size: 27px; line-height: 1; }
+.tribe-dialog h2 { margin: 18px 0 14px; color: #e0eee6; font: 400 clamp(28px, 4vw, 40px)/1.25 Georgia, serif; }
+.tribe-detail-seal { width: 78px; height: 78px; color: #d4ece0; }
+.tribe-manifesto { margin: 0 auto 22px; color: #c9e0ce; font: italic 20px/1.65 Georgia, serif; }
+.tribe-detail-section { margin: 27px 0 0; padding-top: 23px; border-top: 1px solid #94b9a72b; }
+.tribe-detail-section h3, .tribe-review-note h3 { margin: 0 0 14px; color: #d7e9de; font: 400 21px/1.4 Georgia, serif; }
+.tribe-detail-section p, .tribe-detail-section li, .tribe-review-note li, .tribe-confirm-copy { margin: 0 0 13px; color: #bed1cd; font-size: 14px; line-height: 1.9; }
+.tribe-detail-section ul, .tribe-review-note ul { padding-left: 21px; }
+.tribe-note { color: #aac1b9 !important; font-size: 12px !important; }
+.tribe-review-note { max-width: 660px; margin: 22px auto; padding: 19px 22px; border-left: 2px solid #bbd8bd; background: #58775e17; text-align: left; }
+.tribe-review-note h4 { margin: 0 0 12px; color: #d1e2d4; font-size: 14px; font-weight: 500; }
+.tribe-review-note p { color: #bfd2c8; font-size: 14px; line-height: 1.8; }
+.tribe-review-note li:last-child { margin-bottom: 0; }
+.tribe-gifts { margin: 0; }
+.tribe-gifts > div { padding: 14px 0; border-bottom: 1px solid #89ac9b21; }
+.tribe-gifts dt { margin-bottom: 6px; color: #d8e9df; font: 400 17px/1.4 Georgia, serif; }
+.tribe-gifts dd { margin: 0; color: #bfd0cb; font-size: 13px; line-height: 1.8; }
+.tribe-gifts small { display: block; color: #9ab7aa; font-size: 10px; margin-top: 4px; }
+.tribe-source { margin: 25px 0; color: #9db7af; font-size: 11px; line-height: 1.8; }
+.tribe-dialog-actions { margin-top: 28px; }
+.tribe-dialog-actions .umbra-descend { min-width: 0; width: 100%; }
+.tribe-dialog button:focus-visible { outline: 2px solid #c4efd8; outline-offset: 4px; }
+.tribal-chosen { max-width: 760px; margin: 0 auto; }
+.tribe-chosen-seal { width: 144px; height: 144px; margin: 34px auto 23px; color: #d1eddd; filter: drop-shadow(0 0 20px #a6e4bd55); }
+.tribal-chosen > h2 { margin: 0 0 13px; color: #e0eee5; font: 400 34px/1.25 Georgia, serif; }
+.tribe-chosen-totem { margin: 14px 0 30px; color: #adc8bc; font-size: 13px; }
+.tribal-chosen .tribe-confirm-copy { max-width: 500px; margin: 24px auto; }
+.tribe-chosen-actions { margin-top: 30px; }
+@media (max-width: 1000px) { .tribe-card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; } }
+@media (max-width: 680px) {
+  .tribe-card-grid { grid-template-columns: minmax(0, 1fr); }
+  .tribe-card { padding: 22px; }
+  .tribe-gallery-intro { font-size: 13px; }
+  .tribe-dialog { width: calc(100% - 20px); max-height: 92svh; }
+  .tribe-dialog-content { padding: 24px 20px; }
+  .tribe-dialog-close { margin: -12px -8px 0 8px; }
+  .tribe-dialog h2 { font-size: 29px; }
+  .tribe-detail-section p, .tribe-detail-section li, .tribe-review-note li, .tribe-confirm-copy { font-size: 13px; }
+  .tribe-manifesto { font-size: 18px; }
+  .tribe-review-note { padding: 16px; }
+}

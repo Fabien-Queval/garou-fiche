@@ -1,0 +1,18 @@
+/* Pas de morphing de la géométrie : seules les captures changent d'opacité. */
+html[data-scene-fade] { overflow-x: clip; }
+html[data-scene-fade]::view-transition-group(root) { animation: none; }
+html[data-scene-fade]::view-transition-image-pair(root) { isolation: isolate; background: #edf0ea; }
+html[data-scene-fade='night']::view-transition-image-pair(root) { background: #000; }
+html[data-scene-fade]::view-transition-old(root),
+html[data-scene-fade]::view-transition-new(root) { mix-blend-mode: normal; }
+html[data-scene-fade]::view-transition-old(root) { animation: scene-out 220ms ease-in both; }
+html[data-scene-fade]::view-transition-new(root) { animation: scene-in 420ms 100ms ease-out both; }
+html[data-scene-fade='night']::view-transition-old(root) { animation-duration: 500ms; }
+html[data-scene-fade='night']::view-transition-new(root) { animation-duration: 850ms; animation-delay: 280ms; }
+.scene-fade-veil { position: fixed; inset: 0; z-index: 2147483647; opacity: 0; cursor: progress; }
+@keyframes scene-out { from { opacity: 1; } to { opacity: 0; } }
+@keyframes scene-in { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
+}
+@media print { .scene-fade-veil { display: none !important; } }

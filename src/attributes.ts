@@ -35,7 +35,7 @@ export function selectPhysicalLevel(
     if (!Number.isInteger(level) || level < 1 || level > 5) return values
 
     const nextValues = { ...values, [criterion]: level }
-    return allocatedPhysicalPoints(nextValues) <= budget ? nextValues : values
+    return level < values[criterion] || allocatedPhysicalPoints(nextValues) <= budget ? nextValues : values
 }
 
 export const LEVEL_LABELS = ['Base', 'Standard', 'Élevé', 'Très élevé', 'Hors norme']
@@ -53,7 +53,7 @@ export function selectMentalLevel(
     if (!Number.isInteger(level) || level < 1 || level > 5) return values
 
     const nextValues = { ...values, [criterion]: level }
-    return allocatedMentalPoints(nextValues) <= budget ? nextValues : values
+    return level < values[criterion] || allocatedMentalPoints(nextValues) <= budget ? nextValues : values
 }
 
 export const MENTAL_CRITERIA: {
@@ -113,7 +113,7 @@ export function selectSocialLevel(
     if (!Number.isInteger(level) || level < 1 || level > 5) return values
 
     const nextValues = { ...values, [criterion]: level }
-    return allocatedSocialPoints(nextValues) <= budget ? nextValues : values
+    return level < values[criterion] || allocatedSocialPoints(nextValues) <= budget ? nextValues : values
 }
 
 export const SOCIAL_CRITERIA: {

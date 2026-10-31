@@ -167,7 +167,7 @@ export function allocatedAbilityPoints(values: AbilityValues): number {
 export function selectAbilityLevel(values: AbilityValues, id: string, level: number, budget: number): AbilityValues {
     if (!(id in values) || !Number.isInteger(level) || level < 0 || level > 3) return values
     const next = { ...values, [id]: level }
-    return allocatedAbilityPoints(next) <= budget ? next : values
+    return level < values[id] || allocatedAbilityPoints(next) <= budget ? next : values
 }
 
 export function canCompleteAbilities(definitions: AbilityDefinition[], values: AbilityValues, details: AbilityDetails, budget: number): boolean {

@@ -1,11 +1,15 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { BACKGROUNDS, allocatedBackgroundPoints, canCompleteBackgrounds } from './backgrounds.ts'
 import type { BackgroundDraft } from './backgrounds'
+import { getUmbraAssessmentResult, validUmbraDraft } from './umbraQuestionnaire.ts'
+import { validFinaleDraft } from './finaleState.ts'
 
 type StoragePort = Pick<Storage, 'getItem' | 'setItem'>
 const screen = import.meta.env?.DEV && typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('screen') : null
 export const QUESTIONNAIRE_KEY = `garou-questionnaire-v1${screen ? `-preview-${screen}` : ''}`
 export const QuestionnaireStorageContext = createContext(QUESTIONNAIRE_KEY)
+// La relecture utilise un stockage en mémoire, sans événement de sauvegarde connectée.
+export const QuestionnaireStoragePortContext = createContext<StoragePort | null>(null)
 
 function compatible(value: unknown, example: unknown): boolean {
     if (typeof value !== typeof example || value === null || example === null) return false
@@ -18,9 +22,25 @@ function compatible(value: unknown, example: unknown): boolean {
 export function readAnswer<T>(storage: StoragePort, key: string, field: string, fallback: T): T {
     try {
         const value = JSON.parse(storage.getItem(key) ?? '{}')[field]
+        if (field === 'finaleDraft') return validFinaleDraft(value) ? value as T : fallback
+        // Ce brouillon versionné valide lui-même ses 16 questions, au-delà des niveaux 0–5.
+        if (field === 'umbraDraft') {
+            if (validUmbraDraft(value)) return value as T
+            if (value && typeof value === 'object' && !Array.isArray(value)) {
+                const recovered = { ...value }
+                delete recovered.auspiceChoice
+                delete recovered.auspiceStage
+                delete recovered.viewedAuspice
+                if (validUmbraDraft(recovered)) return recovered as T
+                delete recovered.tribeChoice
+                delete recovered.tribalStage
+                if (validUmbraDraft(recovered)) return recovered as T
+            }
+            return fallback
+        }
         if (!compatible(value, fallback)) return fallback
         if (['abilityIndex', 'evaluationIndex'].includes(field) && value > 2) return fallback
-        if (field === 'phase' && !['job', 'scramble', 'concept', 'attributes', 'evaluation', 'abilities', 'abilityEvaluation', 'backgrounds'].includes(value)) return fallback
+        if (field === 'phase' && !['job', 'scramble', 'concept', 'attributes', 'evaluation', 'abilities', 'abilityEvaluation', 'backgrounds', 'umbra', 'finale', 'dossier'].includes(value)) return fallback
         if (field === 'backgroundDraft') {
             const draft = value as BackgroundDraft
             if (allocatedBackgroundPoints(draft.values) > 5) return fallback
@@ -42,23 +62,31 @@ export function writeAnswer(storage: StoragePort, key: string, field: string, va
             const parsed = JSON.parse(storage.getItem(key) ?? '{}')
             if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) data = parsed
         } catch { /* Un brouillon illisible ne bloque pas les nouvelles réponses. */ }
-        storage.setItem(key, JSON.stringify({ ...data, [field]: value, _updatedAt: Date.now() }))
+        const next: Record<string, unknown> = { ...data, [field]: value, _updatedAt: Date.now() }
+        if (field === 'umbraDraft') {
+            // Instantané demandé pour le dossier ; les réponses restent la source de vérité.
+            if (validUmbraDraft(value)) next.umbraResult = getUmbraAssessmentResult(value)
+            else delete next.umbraResult
+        }
+        storage.setItem(key, JSON.stringify(next))
         return true
     } catch { return false }
 }
 
 export function useQuestionnaireState<T>(field: string, initial: T) {
     const storageKey = useContext(QuestionnaireStorageContext)
+    const storagePort = useContext(QuestionnaireStoragePortContext)
     const [value, setValue] = useState<T>(() => {
-        try { return readAnswer(window.localStorage, storageKey, field, initial) }
+        try { return readAnswer(storagePort ?? window.localStorage, storageKey, field, initial) }
         catch { return initial }
     })
     useEffect(() => {
+        if (storagePort) { writeAnswer(storagePort, storageKey, field, value); return }
         let saved = false
         try { saved = writeAnswer(window.localStorage, storageKey, field, value) }
         catch { /* Certains navigateurs désactivent le stockage local. */ }
         if (!saved) window.dispatchEvent(new Event('questionnaire-storage-error'))
         window.dispatchEvent(new CustomEvent('questionnaire-answer-change', { detail: { key: storageKey } }))
-    }, [storageKey, field, value])
+    }, [storagePort, storageKey, field, value])
     return [value, setValue] as const
 }
