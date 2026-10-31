@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { Dispatch, SetStateAction } from 'react'
 import UmbraScene from './UmbraScene'
+import TribalJourney from './TribalJourney'
+import AuspiceScene from './AuspiceScene'
+import type { BackgroundValues } from './backgrounds'
 import { UMBRA_QUESTIONS, canContinueUmbra, chooseUmbraAnswer, completeUmbra, visitUmbraQuestion } from './umbraQuestionnaire'
 import type { UmbraQuestion } from './umbraQuestions'
 import type { UmbraDraft } from './umbraQuestionnaire'
@@ -31,10 +34,10 @@ function Appeal({ still, hidden, onComplete }: { still: boolean; hidden: boolean
     </div>
 }
 
-type Props = { draft: UmbraDraft; setDraft: Dispatch<SetStateAction<UmbraDraft>>; onBack: () => void; onRestart?: () => void }
+type Props = { draft: UmbraDraft; setDraft: Dispatch<SetStateAction<UmbraDraft>>; backgroundValues: BackgroundValues; onBack: () => void; onRestart?: () => void }
 type PanelProps = Props & { travelling: boolean; navigate: (to: number) => void }
 
-function QuestionPanel({ draft, setDraft, travelling, navigate, onBack, onRestart }: PanelProps) {
+function QuestionPanel({ draft, setDraft, backgroundValues, travelling, navigate, onBack, onRestart }: PanelProps) {
     const heading = useRef<HTMLHeadingElement>(null)
     const question: UmbraQuestion = UMBRA_QUESTIONS[draft.questionIndex]
     const selected = draft.answers[UMBRA_QUESTIONS[draft.questionIndex].id]
@@ -47,12 +50,7 @@ function QuestionPanel({ draft, setDraft, travelling, navigate, onBack, onRestar
         return () => cancelAnimationFrame(frame)
     }, [travelling, draft.questionIndex, draft.completed])
 
-    if (draft.completed) return <div className="umbra-question-panel umbra-completion">
-        <p className="umbra-situation-label">La traversée est accomplie</p>
-        <h1 ref={heading} tabIndex={-1}>Quelles visions du monde semblent résonner avec ton personnage ?</h1>
-        <p className="umbra-question-description">Vos réponses sont conservées. L’exploration des treize Tribus viendra ensuite : le choix vous appartiendra.</p>
-        <div className="umbra-question-actions"><button className="umbra-descend" type="button" onClick={() => setDraft(current => ({ ...current, completed: false }))}>Revoir mes réponses <span aria-hidden="true">↺</span></button><button className="umbra-text-button" type="button" onClick={onBack}>Retour au dossier</button>{onRestart && <button className="umbra-text-button" type="button" onClick={onRestart}>Rejouer la traversée</button>}</div>
-    </div>
+    if (draft.completed) return <TribalJourney draft={draft} setDraft={setDraft} backgroundValues={backgroundValues} onReview={() => setDraft(current => ({ ...current, completed: false, tribalStage: 'reveal', ...(current.auspiceStage ? { auspiceStage: undefined } : {}) }))} onBack={onBack} onRestart={onRestart} />
 
     return <form className="umbra-question-panel" onSubmit={event => {
         event.preventDefault()
@@ -81,7 +79,7 @@ function QuestionPanel({ draft, setDraft, travelling, navigate, onBack, onRestar
     </form>
 }
 
-export default function UmbraAssessment({ draft, setDraft, onBack, onRestart }: Props) {
+export default function UmbraAssessment({ draft, setDraft, backgroundValues, onBack, onRestart }: Props) {
     const [storageError, setStorageError] = useState(false)
     useEffect(() => {
         const failed = () => setStorageError(true)
@@ -91,7 +89,8 @@ export default function UmbraAssessment({ draft, setDraft, onBack, onRestart }: 
     const visit = useCallback((index: number) => setDraft(current => visitUmbraQuestion(current, index)), [setDraft])
     const finishIntro = useCallback(() => setDraft(current => ({ ...current, introSeen: true })), [setDraft])
     const mode = !draft.introSeen ? 'intro' : draft.completed ? 'complete' : 'questions'
+    if (draft.completed && draft.tribalStage === 'chosen' && draft.tribeChoice && draft.auspiceStage) return <AuspiceScene draft={draft} setDraft={setDraft} storageError={storageError} />
     return <UmbraScene initialDepth={draft.questionIndex} stepCount={UMBRA_QUESTIONS.length} mode={mode} onDepthChange={visit}>
-        {controls => <>{!draft.introSeen ? <Appeal still={controls.still} hidden={controls.hidden} onComplete={finishIntro} /> : <QuestionPanel draft={draft} setDraft={setDraft} onBack={onBack} onRestart={onRestart} travelling={controls.travelling} navigate={controls.navigate} />}{storageError && <p className="umbra-save-error" role="alert">La sauvegarde sur cet appareil est indisponible. Gardez cet onglet ouvert pour conserver vos réponses.</p>}</>}
+        {controls => <>{!draft.introSeen ? <Appeal still={controls.still} hidden={controls.hidden} onComplete={finishIntro} /> : <QuestionPanel draft={draft} setDraft={setDraft} backgroundValues={backgroundValues} onBack={onBack} onRestart={onRestart} travelling={controls.travelling} navigate={controls.navigate} />}{storageError && <p className="umbra-save-error" role="alert">La sauvegarde sur cet appareil est indisponible. Gardez cet onglet ouvert pour conserver vos réponses.</p>}</>}
     </UmbraScene>
 }

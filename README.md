@@ -1,6 +1,6 @@
-# It's a King of Magic — Aide à la création de personnage
+# It's a kind of magic — Aide à la création de personnage
 
-Application web d'aide à la création de personnage, réalisée par **QUEVAL Fabien** pour le jeu de rôle **Werewolf: The Apocalypse**, dans le cadre de la campagne **« It's a King of Magic »**.
+Application web d'aide à la création de personnage, réalisée par **QUEVAL Fabien** pour le jeu de rôle **Werewolf: The Apocalypse**, dans le cadre de la campagne **« It's a kind of magic »**.
 
 Pensée pour accompagner des joueurs débutants, elle propose un questionnaire progressif qui les aide à définir leur personnage sans avoir à maîtriser les règles au préalable. Leurs réponses permettent au meneur de jeu de préparer un personnage adapté à leurs envies et à leur manière de jouer.
 

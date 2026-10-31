@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { BACKGROUNDS, allocatedBackgroundPoints, canCompleteBackgrounds } from './backgrounds.ts'
 import type { BackgroundDraft } from './backgrounds'
-import { validUmbraDraft } from './umbraQuestionnaire.ts'
+import { getUmbraAssessmentResult, validUmbraDraft } from './umbraQuestionnaire.ts'
 
 type StoragePort = Pick<Storage, 'getItem' | 'setItem'>
 const screen = import.meta.env?.DEV && typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('screen') : null
@@ -20,7 +20,20 @@ export function readAnswer<T>(storage: StoragePort, key: string, field: string, 
     try {
         const value = JSON.parse(storage.getItem(key) ?? '{}')[field]
         // Ce brouillon versionné valide lui-même ses 16 questions, au-delà des niveaux 0–5.
-        if (field === 'umbraDraft') return validUmbraDraft(value) ? value as T : fallback
+        if (field === 'umbraDraft') {
+            if (validUmbraDraft(value)) return value as T
+            if (value && typeof value === 'object' && !Array.isArray(value)) {
+                const recovered = { ...value }
+                delete recovered.auspiceChoice
+                delete recovered.auspiceStage
+                delete recovered.viewedAuspice
+                if (validUmbraDraft(recovered)) return recovered as T
+                delete recovered.tribeChoice
+                delete recovered.tribalStage
+                if (validUmbraDraft(recovered)) return recovered as T
+            }
+            return fallback
+        }
         if (!compatible(value, fallback)) return fallback
         if (['abilityIndex', 'evaluationIndex'].includes(field) && value > 2) return fallback
         if (field === 'phase' && !['job', 'scramble', 'concept', 'attributes', 'evaluation', 'abilities', 'abilityEvaluation', 'backgrounds', 'umbra'].includes(value)) return fallback
@@ -45,7 +58,13 @@ export function writeAnswer(storage: StoragePort, key: string, field: string, va
             const parsed = JSON.parse(storage.getItem(key) ?? '{}')
             if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) data = parsed
         } catch { /* Un brouillon illisible ne bloque pas les nouvelles réponses. */ }
-        storage.setItem(key, JSON.stringify({ ...data, [field]: value, _updatedAt: Date.now() }))
+        const next: Record<string, unknown> = { ...data, [field]: value, _updatedAt: Date.now() }
+        if (field === 'umbraDraft') {
+            // Instantané demandé pour le dossier ; les réponses restent la source de vérité.
+            if (validUmbraDraft(value)) next.umbraResult = getUmbraAssessmentResult(value)
+            else delete next.umbraResult
+        }
+        storage.setItem(key, JSON.stringify(next))
         return true
     } catch { return false }
 }

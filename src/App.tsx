@@ -219,7 +219,7 @@ function App({ totemRepository }: { totemRepository?: TotemRepository }) {
     }
 
     if (phase === 'umbra' && !takingOver && canCompleteBackgrounds(backgroundDraft)) {
-        return <UmbraAssessment draft={umbraDraft} setDraft={setUmbraDraft} onBack={returnFromUmbra} onRestart={import.meta.env.DEV ? () => { setUmbraDraft(createUmbraDraft()); returnFromUmbra() } : undefined} />
+        return <UmbraAssessment draft={umbraDraft} setDraft={setUmbraDraft} backgroundValues={backgroundDraft.values} onBack={returnFromUmbra} onRestart={import.meta.env.DEV ? () => { setUmbraDraft(createUmbraDraft()); returnFromUmbra() } : undefined} />
     }
 
     return (

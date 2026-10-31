@@ -1,0 +1,36 @@
+.umbra-intrusions { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; user-select: none; contain: strict; }
+.umbra-intrusion { position: absolute; overflow: hidden; color: #b9d7cd; font-family: Consolas, 'Courier New', monospace; line-height: 1.55; letter-spacing: 0.045em; animation: umbra-signal-seep var(--signal-duration) linear both; }
+.umbra-intrusion-text { position: relative; display: block; overflow-wrap: anywhere; text-shadow: 0 0 18px #7accaa40; }
+.umbra-intrusion-text::before, .umbra-intrusion-text::after { content: attr(data-echo); position: absolute; inset: 0; opacity: calc(0.25 + var(--signal-intensity) * 0.5); }
+.umbra-intrusion-text::before { color: #db586d; translate: var(--signal-offset) 1px; clip-path: inset(8% 0 38%); }
+.umbra-intrusion-text::after { color: #60e9a6; translate: calc(-1 * var(--signal-offset)) -1px; clip-path: inset(38% 0 5%); }
+.umbra-intrusion[data-vertical='true'] { writing-mode: vertical-rl; text-orientation: mixed; letter-spacing: 0.015em; }
+.umbra-signal-tear { position: absolute; top: 42%; left: 0; width: 100%; height: 1px; background: #91cbbd; box-shadow: var(--signal-offset) 3px #a8465960, calc(-1 * var(--signal-offset)) -2px #458b8170; opacity: calc(var(--signal-intensity) * 0.45); }
+.umbra-intrusions[data-tier='0'] .umbra-signal-tear { display: none; }
+.umbra-intrusions[data-tier='3'] .umbra-intrusion { color: #c7e3ce; }
+.umbra-intrusion[data-kind='dropout'] { animation-name: umbra-signal-dropout; }
+.umbra-intrusion[data-kind='fracture'] .umbra-signal-tear { top: 25%; height: 2px; }
+.umbra-intrusion[data-phase='rupture'] .umbra-intrusion-text { translate: -1px 1px; clip-path: polygon(0 0, 100% 0, 100% 29%, 5% 29%, 5% 35%, 100% 35%, 100% 72%, 0 72%, 0 64%, 93% 64%, 93% 59%, 0 59%); }
+.umbra-intrusion[data-phase='leak'] .umbra-intrusion-text::before { clip-path: inset(15% 0 20%); opacity: 0.8; }
+@keyframes umbra-signal-seep {
+  0% { opacity: 0; transform: translate(0, 1px); }
+  2%, 13% { opacity: var(--signal-intensity); transform: translate(0, 0); }
+  14% { opacity: calc(var(--signal-intensity) * 0.35); transform: translate(-2px, 0); }
+  17%, 29% { opacity: var(--signal-intensity); transform: translate(0, 0); }
+  30% { transform: translate(1px, -1px); }
+  32%, 76% { opacity: var(--signal-intensity); transform: translate(0, 0); }
+  77% { opacity: calc(var(--signal-intensity) * 0.5); transform: translate(-1px, 0); }
+  80%, 89% { opacity: var(--signal-intensity); transform: translate(0, 0); }
+  100% { opacity: 0; transform: translate(0, 2px); }
+}
+@keyframes umbra-signal-dropout {
+  0% { opacity: 0; transform: translate(1px, 0); }
+  1%, 24% { opacity: var(--signal-intensity); transform: translate(0, 0); }
+  25%, 30% { opacity: calc(var(--signal-intensity) * 0.15); transform: translate(-2px, 1px); }
+  31%, 58% { opacity: var(--signal-intensity); transform: translate(0, 0); }
+  59%, 62% { opacity: calc(var(--signal-intensity) * 0.35); }
+  63%, 86% { opacity: var(--signal-intensity); transform: translate(1px, 0); }
+  100% { opacity: 0; transform: translate(0, 0); }
+}
+.umbra-preview[data-still='true'] .umbra-intrusions, .umbra-preview[data-paused='true'] .umbra-intrusions { display: none; }
+@media (prefers-reduced-motion: reduce) { .umbra-intrusions { display: none; } }
